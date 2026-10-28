@@ -119,6 +119,8 @@ access_log
 !/public/uploads/payments/.gitkeep
 /public/file_path/*
 !/public/file_path/.gitkeep
+/public/images/
+public/images/
 
 # ==============================================================================
 # Testing & Code Quality Tools
