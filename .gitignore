@@ -1,0 +1,177 @@
+# ==============================================================================
+# Environment & Secret Configuration Files
+# ==============================================================================
+.env
+.env.*
+.env.backup
+.env.local
+.env.production
+.env.staging
+.env.testing
+*.env
+*.env.*
+!.env.example
+!.env.example.*
+
+# ==============================================================================
+# Security Keys, Certificates & Credentials
+# ==============================================================================
+*.key
+*.pem
+*.crt
+*.cer
+*.der
+*.pfx
+*.p12
+*.pub
+oauth-*.key
+/storage/*.key
+id_rsa*
+id_ed25519*
+auth.json
+.auth.json
+*credentials.json
+client_secret*.json
+service-account*.json
+firebase-*.json
+.npmrc
+.yarnrc
+
+# ==============================================================================
+# Dependencies (Composer & Node)
+# ==============================================================================
+/vendor/
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==============================================================================
+# Laravel Framework Cache, Storage & Logs
+# ==============================================================================
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+/storage/app/*
+!/storage/app/.gitignore
+!/storage/app/public
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/cache/data/*
+!/storage/framework/cache/data/.gitignore
+
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Logs
+*.log
+error_log
+access_log
+
+# Dev Server, Hot Reload & Storage Symlink
+/public/hot
+/public/storage
+/public/build
+.hot
+
+# ==============================================================================
+# Database Backups, Dumps & SQLite
+# ==============================================================================
+*.sql
+*.sql.gz
+*.sql.bz2
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.backup
+*.dump
+
+# ==============================================================================
+# Archives & Compressed Files
+# ==============================================================================
+*.zip
+*.tar
+*.gz
+*.tgz
+*.rar
+*.7z
+*.iso
+
+# ==============================================================================
+# User Uploads & Media (Prevent accidental push of private uploads/receipts)
+# ==============================================================================
+/public/uploads/payments/*
+!/public/uploads/payments/.gitkeep
+/public/file_path/*
+!/public/file_path/.gitkeep
+
+# ==============================================================================
+# Testing & Code Quality Tools
+# ==============================================================================
+.phpunit.result.cache
+.phpunit.cache
+/coverage/
+.php-cs-fixer.cache
+.php_cs.cache
+.phpstan.cache
+infection.log
+
+# ==============================================================================
+# Local IDEs & Text Editors
+# ==============================================================================
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+*.orig
+*.tmp
+*.temp
+
+# ==============================================================================
+# OS Generated Files & Caches
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ==============================================================================
+# Local Environments & Virtualization
+# ==============================================================================
+Homestead.json
+Homestead.yaml
+docker-compose.override.yml
+.vagrant/
+
+# ==============================================================================
+# Local Scrap & Temporary Project Files
+# ==============================================================================
+upd/
+/public/C_/
+/public/images old/
+/storage/*.html
