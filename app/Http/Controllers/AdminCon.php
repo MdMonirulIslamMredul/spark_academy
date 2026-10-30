@@ -97,57 +97,88 @@ class AdminCon extends Controller
 
     //Begin:: Add About us
     public function Add_about_us_info(Request $request) {
-        $request->validate([
-            'image' => 'required',
-        ]);
-
-        $about_image = $request->file('image');
-
-        $name_gen = hexdec(uniqid()).".".$about_image->getClientOriginalExtension();
-        Image::make($about_image)->resize(520, 410)->save('images/'.$name_gen);
-        $last_img = 'images/'.$name_gen;
-
         $data = array();
-        $data['aboutDes'] = $request->editor1;
-        $data['image'] = $last_img;
+
+        if ($request->hasFile('expert_image')) {
+            $expert_img = $request->file('expert_image');
+            $img_name = hexdec(uniqid()).".".$expert_img->getClientOriginalExtension();
+            $expert_img->move(public_path('images'), $img_name);
+            $data['expert_image'] = 'images/'.$img_name;
+            $data['image'] = 'images/'.$img_name;
+        } elseif ($request->hasFile('image')) {
+            $about_image = $request->file('image');
+            $img_name = hexdec(uniqid()).".".$about_image->getClientOriginalExtension();
+            $about_image->move(public_path('images'), $img_name);
+            $data['image'] = 'images/'.$img_name;
+            $data['expert_image'] = 'images/'.$img_name;
+        }
+
+        $data['aboutDes'] = $request->aboutDes ?? $request->editor1;
+        $data['pillar1_title'] = $request->pillar1_title;
+        $data['pillar1_desc'] = $request->pillar1_desc;
+        $data['pillar2_title'] = $request->pillar2_title;
+        $data['pillar2_desc'] = $request->pillar2_desc;
+        $data['pillar3_title'] = $request->pillar3_title;
+        $data['pillar3_desc'] = $request->pillar3_desc;
+
+        $data['expert_name'] = $request->expert_name;
+        $data['expert_role'] = $request->expert_role;
+        $data['expert_badge'] = $request->expert_badge;
+        $data['expert_credentials'] = $request->expert_credentials;
+        $data['expert_bio'] = $request->expert_bio;
+        $data['facebook_link'] = $request->facebook_link;
+        $data['youtube_link'] = $request->youtube_link;
+        $data['offline_address'] = $request->offline_address;
+        $data['offline_phone'] = $request->offline_phone;
         $data['created_at'] = Carbon::now();
+        $data['updated_at'] = Carbon::now();
 
         DB::table('about_infos')->insert($data);
-        return Redirect() -> route('cms.about_us')->with('status', 'About Info Added Successfully');
+        return Redirect()->route('cms.about_us')->with('status', 'About Info Added Successfully');
     }
     //End:: Add About us
 
-    //Begin:: Add About us
+    //Begin:: Update About us
     public function Update_about_us_info(Request $request, $id) {
-
         $old_image = $request->old_image;
         $data = array();
 
-        $about_image = $request->file('image');
-
-        if($about_image){
-            $name_gen = hexdec(uniqid()).".".$about_image->getClientOriginalExtension();
-            Image::make($about_image)->resize(520, 410)->save('images/'.$name_gen);
-            $last_img = 'images/'.$name_gen;
-
-            if ($old_image) {
-                if (file_exists($old_image)) {
-                    unlink($old_image);
-                }
-            }
-
-            $data['image'] = $last_img;
+        if ($request->hasFile('expert_image')) {
+            $expert_img = $request->file('expert_image');
+            $img_name = hexdec(uniqid()).".".$expert_img->getClientOriginalExtension();
+            $expert_img->move(public_path('images'), $img_name);
+            $data['expert_image'] = 'images/'.$img_name;
+            $data['image'] = 'images/'.$img_name;
+        } elseif ($request->hasFile('image')) {
+            $about_image = $request->file('image');
+            $img_name = hexdec(uniqid()).".".$about_image->getClientOriginalExtension();
+            $about_image->move(public_path('images'), $img_name);
+            $data['image'] = 'images/'.$img_name;
         }
 
-        $about_image = $request->file('image');
+        $data['aboutDes'] = $request->aboutDes ?? $request->editor1;
+        $data['pillar1_title'] = $request->pillar1_title;
+        $data['pillar1_desc'] = $request->pillar1_desc;
+        $data['pillar2_title'] = $request->pillar2_title;
+        $data['pillar2_desc'] = $request->pillar2_desc;
+        $data['pillar3_title'] = $request->pillar3_title;
+        $data['pillar3_desc'] = $request->pillar3_desc;
 
-        $data['aboutDes'] = $request->editor1;
+        $data['expert_name'] = $request->expert_name;
+        $data['expert_role'] = $request->expert_role;
+        $data['expert_badge'] = $request->expert_badge;
+        $data['expert_credentials'] = $request->expert_credentials;
+        $data['expert_bio'] = $request->expert_bio;
+        $data['facebook_link'] = $request->facebook_link;
+        $data['youtube_link'] = $request->youtube_link;
+        $data['offline_address'] = $request->offline_address;
+        $data['offline_phone'] = $request->offline_phone;
         $data['updated_at'] = Carbon::now();
 
         DB::table('about_infos')->where('id', $id)->update($data);
-        return Redirect() -> route('cms.about_us')->with('status', 'About Info Update Successfully');
+        return Redirect()->route('cms.about_us')->with('status', 'About Info Updated Successfully');
     }
-    //End:: Add About us
+    //End:: Update About us
 
     //Begin:: All Students
     public function All_students() {
