@@ -64,7 +64,7 @@
               <img alt="image" src="{{ asset('backend/assets/img/user.png') }}" class="user-img-radious-style">
               <span class="d-sm-none d-lg-inline-block"></span></a>
             <div class="dropdown-menu dropdown-menu-right">
-              <div class="dropdown-title">{{ $Admin_Q->name }}</div>
+              <div class="dropdown-title">{{ $Admin_Q->name ?? 'Admin' }}</div>
               <a href="{{route('cms.profile')}}" class="dropdown-item has-icon">
                 <i class="far fa-user"></i> Profile
               </a>
