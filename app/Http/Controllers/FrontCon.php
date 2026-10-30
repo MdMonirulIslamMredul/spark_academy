@@ -25,7 +25,8 @@ class FrontCon extends Controller
 {
     //Beging:: User About us page
     public function User_AboutUs() {
-        return view('user.pages.about.about_us');
+        $aboutInfo = DB::table('about_infos')->first();
+        return view('user.pages.about.about_us', compact('aboutInfo'));
     }
     //End:: User About us page
 
@@ -80,10 +81,17 @@ class FrontCon extends Controller
     //End:: Category to Exams page
     //Beging:: Course page
     public function course() {
+        $course = Course::with('courseModules')
+            ->where(function($q) {
+                $q->where('name', 'like', '%Physics%')
+                  ->orWhere('name', 'like', '%HSC%');
+            })
+            ->first();
 
-        $courses = DB::table('courses')->paginate(3);
-
-        return view('user.pages.extra.course_category', compact('courses'));
+        if (!$course) {
+            $course = Course::with('courseModules')->first();
+        }
+        return view('user.pages.extra.course_category', compact('course'));
     }
     //End:: Category to Course page
     //Beging:: Course page
@@ -668,10 +676,9 @@ class FrontCon extends Controller
         return view('user.pages.extra.product_info', compact('product_info'));
     }
 
-    public function Checkout() {
-        $pid = $_GET['productID'];
-        $quantity = $_GET['quantity'];
-        //$book_info = DB::table('books')->where('id', $id)->first();
+    public function Checkout(Request $request) {
+        $pid = $request->input('productID', $request->query('productID', 1));
+        $quantity = $request->input('quantity', $request->query('quantity', 1));
         return view('user.pages.extra.checkout', compact('pid', 'quantity'));
     }
     public function CheckoutSub() {
@@ -706,9 +713,7 @@ class FrontCon extends Controller
         $request->validate([
             'name' => 'required',
             'phone' => 'required',
-            'email' => 'required',
             'address' => 'required',
-            // 'radio' => 'required',
         ]);
 
         $total_order = DB::table('books_order')->count('id');
@@ -717,7 +722,7 @@ class FrontCon extends Controller
 
         $data = array();
         $data['name'] = $request->name;
-        $data['email'] = $request->email;
+        $data['email'] = $request->email ?: ($request->phone . '@sparkacademy.com');
         $data['phone'] = $request->phone;
         $data['address'] = $request->address;
         $data['pid'] = $request->pid;
