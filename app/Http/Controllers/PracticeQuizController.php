@@ -259,6 +259,10 @@ class PracticeQuizController extends Controller
                 $session->save();
             }
 
+            $mistakesCount = PracticeSessionQuestion::where('session_id', $session->id)
+                ->where('incorrect_count', '>', 0)
+                ->count();
+
             return response()->json([
                 'session_completed' => true,
                 'stats' => [
@@ -266,6 +270,7 @@ class PracticeQuizController extends Controller
                     'mastered_questions' => $session->mastered_questions,
                     'total_attempts' => $session->total_attempts,
                     'correct_attempts' => $session->correct_attempts,
+                    'mistakes_count' => $mistakesCount,
                     'accuracy' => $session->total_attempts > 0 ? round(($session->correct_attempts / $session->total_attempts) * 100) : 100,
                 ],
             ]);
@@ -292,6 +297,7 @@ class PracticeQuizController extends Controller
             'question' => [
                 'id' => $question->id,
                 'question' => $question->question,
+                'image' => !empty($question->image) ? (str_starts_with($question->image, 'http') ? $question->image : asset($question->image)) : null,
                 'optn1' => $question->optn1,
                 'optn2' => $question->optn2,
                 'optn3' => $question->optn3,
@@ -452,6 +458,73 @@ class PracticeQuizController extends Controller
 
         return redirect()->route('practice_quiz.play', $newSession->id)
             ->with('status', 'New practice session started! Previous history preserved.');
+    }
+
+    /**
+     * Restart game targeting only the questions that were answered incorrectly in this session.
+     */
+    public function restartMistakesSession(Request $request, $sessionId)
+    {
+        $userId = $this->getStudentId();
+        if (!$userId) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            return redirect()->route('user.login_or_signup');
+        }
+
+        $session = PracticeSession::where('id', $sessionId)->firstOrFail();
+        $quiz = PracticeQuiz::findOrFail($session->practice_quiz_id);
+
+        // Find question IDs where incorrect_count > 0 in the previous session
+        $mistakeQIds = PracticeSessionQuestion::where('session_id', $session->id)
+            ->where('incorrect_count', '>', 0)
+            ->pluck('question_id')
+            ->toArray();
+
+        // If no mistakes were made, fall back to all questions
+        if (empty($mistakeQIds)) {
+            $mistakeQIds = PracticeQuestion::where('practice_quiz_id', $quiz->id)->pluck('id')->toArray();
+        }
+
+        $newSession = PracticeSession::create([
+            'user_id' => $userId,
+            'practice_quiz_id' => $quiz->id,
+            'total_questions' => count($mistakeQIds),
+            'mastered_questions' => 0,
+            'total_attempts' => 0,
+            'correct_attempts' => 0,
+            'status' => 'in_progress',
+        ]);
+
+        $insertBatch = [];
+        $now = Carbon::now();
+        foreach ($mistakeQIds as $qId) {
+            $insertBatch[] = [
+                'session_id' => $newSession->id,
+                'question_id' => $qId,
+                'correct_count' => 0,
+                'incorrect_count' => 0,
+                'is_mastered' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if (!empty($insertBatch)) {
+            PracticeSessionQuestion::insert($insertBatch);
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Mistake review game started!',
+                'session_id' => $newSession->id,
+                'questions_count' => count($mistakeQIds),
+            ]);
+        }
+
+        return redirect()->route('practice_quiz.play', $newSession->id)
+            ->with('status', 'Mistake review game started!');
     }
 
     /**
