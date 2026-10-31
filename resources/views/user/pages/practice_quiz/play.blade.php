@@ -6,19 +6,20 @@
     /* Full game view container */
     .game-wrapper {
         min-height: calc(100vh - 120px);
-        background: #f8fafc;
+        background: linear-gradient(180deg, rgba(7, 17, 38, 0.88) 0%, rgba(7, 17, 38, 0.94) 100%), url('{{ asset('images/bcs_prep.jpg') }}') center/cover fixed;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 10px 0;
+        padding: 20px 0;
         transition: background 0.3s ease;
+        font-family: 'Hind Siliguri', sans-serif;
     }
     .game-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 36px;
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
@@ -30,6 +31,18 @@
         margin-bottom: 24px;
         flex-wrap: wrap;
         gap: 16px;
+    }
+    .game-badge-points {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #b45309;
+        border: 1px solid #fcd34d;
+        font-weight: 800;
+        font-size: 14px;
+        padding: 6px 16px;
+        border-radius: 30px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
     .game-badge-streak {
         background: linear-gradient(135deg, #ffedd5 0%, #fee2e2 100%);
@@ -437,6 +450,15 @@
         box-shadow: 0 0 8px rgba(245, 158, 11, 0.7) !important;
     }
 
+    html.dark-theme .game-badge-points,
+    [data-theme="dark"] .game-badge-points,
+    body.dark .game-badge-points,
+    body.dark-theme .game-badge-points {
+        background: rgba(245, 158, 11, 0.2) !important;
+        border: 1px solid rgba(245, 158, 11, 0.4) !important;
+        color: #fbbf24 !important;
+    }
+
     html.dark-theme .game-badge-streak,
     [data-theme="dark"] .game-badge-streak,
     body.dark .game-badge-streak,
@@ -680,14 +702,14 @@
     <div class="container" style="max-width: 1260px;">
         <!-- Top Navigation & Dashboard Link -->
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="{{ route('user.myaccount.dashboard') }}" class="btn btn-sm btn-link text-decoration-none text-muted p-0 d-flex align-items-center gap-1">
+            <a href="{{ route('user.myaccount.dashboard') }}" class="btn btn-sm btn-link text-decoration-none text-light p-0 d-flex align-items-center gap-1 opacity-75">
                 <i class="feather-arrow-left"></i> Exit to Dashboard
             </a>
             <div class="d-flex align-items-center gap-2">
-                <button type="button" id="soundToggleBtn" class="sound-toggle-btn" title="Toggle Sound">
+                <button type="button" id="soundToggleBtn" class="sound-toggle-btn text-white border-secondary" title="Toggle Sound">
                     <i class="feather-volume-2" id="soundIcon"></i>
                 </button>
-                <a href="{{ route('practice_quiz.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                <a href="{{ route('practice_quiz.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
                     All Quizzes
                 </a>
             </div>
@@ -699,11 +721,14 @@
                 <div class="game-card" id="gameCard">
                     <!-- Top Game Stats Bar -->
                     <div class="game-header-bar">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="game-badge-points" id="pointsBadge">
+                                ⚡ পয়েন্ট: <span id="gameScorePoints">0</span>
+                            </span>
                             <span class="game-badge-streak" id="streakBadge">
                                 🔥 Streak: <span id="streakCount">0</span>
                             </span>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2 ms-1">
                                 <span class="small font-weight-bold" style="color: #64748b;" id="questionRepetitionText">
                                     Streak: 0/{{ $session->quiz->target_repetitions }}
                                 </span>
@@ -716,11 +741,11 @@
                         </div>
 
                         <div class="d-flex align-items-center gap-2">
-                            <div class="small font-weight-bold" style="color: #03c6bb;" id="sessionProgressLabel">
+                            <div class="small font-weight-bold" style="color: #ff7a00;" id="sessionProgressLabel">
                                 {{ $session->mastered_questions }}/{{ $session->total_questions }} Mastered ({{ $session->progress_percent }}%)
                             </div>
                             <div class="game-mastery-meter">
-                                <div class="game-mastery-fill" id="sessionProgressFill" style="width: {{ $session->progress_percent }}%;"></div>
+                                <div class="game-mastery-fill" id="sessionProgressFill" style="width: {{ $session->progress_percent }}%; background: linear-gradient(90deg, #ff7a00 0%, #ff9e42 100%);"></div>
                             </div>
                         </div>
                     </div>
@@ -736,6 +761,11 @@
                     <!-- Question Play State -->
                     <div id="questionState" style="display: none;">
                         <h3 class="question-title" id="questionText">Question text goes here</h3>
+
+                        <!-- Question Image Container (Client: চিত্র বা উদ্দীপক থাকলে প্রশ্ন বক্সে সুন্দরভাবে সেট হতে হবে) -->
+                        <div id="questionImageContainer" class="text-center my-3" style="display: none;">
+                            <img id="questionImage" src="" alt="উদ্দীপক/চিত্র" class="img-fluid rounded-3 shadow-sm" style="max-height: 260px; border: 1px solid rgba(0,0,0,0.1);">
+                        </div>
 
                         <!-- Options Container -->
                         <div id="optionsContainer">
@@ -789,6 +819,9 @@
                         </div>
 
                         <div class="d-flex flex-wrap gap-3 justify-content-center">
+                            <button type="button" id="practiceMistakesBtn" class="btn btn-warning rounded-pill px-4 py-3 font-weight-bold d-inline-flex align-items-center gap-2 text-dark shadow-sm" style="display: none;">
+                                <i class="feather-alert-triangle"></i> <span>ভুল প্রশ্ন নিয়ে স্পেশাল গেম (<span id="mistakesCountBadge">0</span>)</span>
+                            </button>
                             <button type="button" id="practiceAgainBtn" class="btn btn-outline-primary rounded-pill px-4 py-3 font-weight-bold d-inline-flex align-items-center gap-2">
                                 <i class="feather-rotate-ccw"></i> <span>Practice Again</span>
                             </button>
@@ -845,6 +878,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let currentQuestion = null;
     let currentStreak = 0;
+    let totalGamePoints = 0;
     let isSubmitting = false;
     let isSoundEnabled = true;
 
@@ -909,6 +943,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const questionState = document.getElementById('questionState');
     const victoryState = document.getElementById('victoryState');
     const questionText = document.getElementById('questionText');
+    const questionImageContainer = document.getElementById('questionImageContainer');
+    const questionImage = document.getElementById('questionImage');
     const optionsContainer = document.getElementById('optionsContainer');
     const questionCol = document.getElementById('questionCol');
     const feedbackCol = document.getElementById('feedbackCol');
@@ -923,6 +959,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const topNextQuestionBtn = document.getElementById('topNextQuestionBtn');
     let canPressContinue = false;
     const streakCount = document.getElementById('streakCount');
+    const gameScorePoints = document.getElementById('gameScorePoints');
+    const practiceMistakesBtn = document.getElementById('practiceMistakesBtn');
+    const mistakesCountBadge = document.getElementById('mistakesCountBadge');
     const questionRepetitionText = document.getElementById('questionRepetitionText');
     const sessionProgressLabel = document.getElementById('sessionProgressLabel');
     const sessionProgressFill = document.getElementById('sessionProgressFill');
@@ -997,8 +1036,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Render Question & Options
     function renderQuestion(q) {
-        questionText.textContent = q.question;
+        questionText.innerHTML = q.question;
         updateRepetitionDots(q.correct_count);
+
+        if (q.image) {
+            questionImage.src = q.image;
+            questionImageContainer.style.display = 'block';
+        } else {
+            questionImage.src = '';
+            questionImageContainer.style.display = 'none';
+        }
 
         optionsContainer.innerHTML = '';
         const letters = ['A', 'B', 'C', 'D', 'E'];
@@ -1092,6 +1139,14 @@ document.addEventListener('DOMContentLoaded', function () {
             currentStreak++;
             streakCount.textContent = currentStreak;
 
+            // Client scoring: +2 points base; if streak > 10, bonus equal to currentStreak
+            let earnedPoints = 2;
+            if (currentStreak > 10) {
+                earnedPoints = currentStreak;
+            }
+            totalGamePoints += earnedPoints;
+            if (gameScorePoints) gameScorePoints.textContent = totalGamePoints;
+
             // Subtle bounce on streak badge
             const streakBadge = document.getElementById('streakBadge');
             if (streakBadge) {
@@ -1101,7 +1156,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             feedbackPanel.className = 'feedback-card correct';
-            feedbackTitle.innerHTML = '<i class="feather-check-circle text-success" style="font-size: 24px;"></i> Correct Answer!';
+            feedbackTitle.innerHTML = '<i class="feather-check-circle text-success" style="font-size: 24px;"></i> সঠিক উত্তর! (+' + earnedPoints + ' পয়েন্ট)';
             
             if (res.question_mastered) {
                 feedbackSubBadge.className = 'badge bg-success text-white';
@@ -1117,9 +1172,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 feedbackMessage.textContent = `Great job! Answer correctly ${res.target_repetitions - res.correct_count} more time(s) in a row to master it.`;
             }
 
-            if (res.explanation) {
+            // Client rule: ব্যাখ্যা না দিলে শো করবে না
+            if (res.explanation && res.explanation.trim() !== '') {
                 explanationContainer.style.display = 'block';
-                explanationText.textContent = res.explanation;
+                explanationText.innerHTML = res.explanation;
             } else {
                 explanationContainer.style.display = 'none';
             }
@@ -1129,15 +1185,20 @@ document.addEventListener('DOMContentLoaded', function () {
             currentStreak = 0;
             streakCount.textContent = currentStreak;
 
+            // Client scoring: -1 point on mistake
+            totalGamePoints = Math.max(0, totalGamePoints - 1);
+            if (gameScorePoints) gameScorePoints.textContent = totalGamePoints;
+
             feedbackPanel.className = 'feedback-card incorrect';
-            feedbackTitle.innerHTML = '<i class="feather-x-circle text-danger" style="font-size: 24px;"></i> Incorrect';
+            feedbackTitle.innerHTML = '<i class="feather-x-circle text-danger" style="font-size: 24px;"></i> ভুল উত্তর (-১ পয়েন্ট)';
             feedbackSubBadge.className = 'badge bg-danger text-white';
             feedbackSubBadge.textContent = `Streak Reset (0/${res.target_repetitions})`;
             feedbackMessage.textContent = `Streak reset to 0/${res.target_repetitions}! You need ${res.target_repetitions} consecutive correct answers in a row to master this question.`;
 
-            if (res.explanation) {
+            // Client rule: ব্যাখ্যা না দিলে শো করবে না
+            if (res.explanation && res.explanation.trim() !== '') {
                 explanationContainer.style.display = 'block';
-                explanationText.textContent = res.explanation;
+                explanationText.innerHTML = res.explanation;
             } else {
                 explanationContainer.style.display = 'none';
             }
@@ -1217,6 +1278,13 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('finalMasteredCount').textContent = stats.mastered_questions;
             document.getElementById('finalAttemptsCount').textContent = stats.total_attempts;
             document.getElementById('finalAccuracyPercent').textContent = `${stats.accuracy}%`;
+
+            if (stats.mistakes_count && stats.mistakes_count > 0) {
+                if (mistakesCountBadge) mistakesCountBadge.textContent = stats.mistakes_count;
+                if (practiceMistakesBtn) practiceMistakesBtn.style.display = 'inline-flex';
+            } else {
+                if (practiceMistakesBtn) practiceMistakesBtn.style.display = 'none';
+            }
         }
 
         victoryState.style.display = 'block';
@@ -1268,6 +1336,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Reset local metrics
                 currentStreak = 0;
                 streakCount.textContent = '0';
+                totalGamePoints = 0;
+                if (gameScorePoints) gameScorePoints.textContent = '0';
                 updateRepetitionDots(0);
                 updateSessionProgress({
                     mastered_questions: 0,
@@ -1281,6 +1351,61 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => {
                 console.error('AJAX restart error, falling back:', err);
                 window.location.href = "{{ route('practice_quiz.restart', $session->id) }}";
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            });
+        });
+    }
+
+    // Handle Special Mistake-only Replay (Client: এরপর ভুল করলে শুধু ভুলের উপর গেইম , এর মাধ্যমেই অধ্যায় শেষ)
+    if (practiceMistakesBtn) {
+        practiceMistakesBtn.addEventListener('click', function () {
+            const btn = this;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> শুরু হচ্ছে...';
+
+            fetch(`/practice-quiz/restart-mistakes/${sessionId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                if (data.session_id) {
+                    sessionId = data.session_id;
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, '', `/practice-quiz/play/${data.session_id}`);
+                    }
+                }
+
+                victoryState.style.display = 'none';
+                feedbackPanel.style.display = 'none';
+                currentStreak = 0;
+                streakCount.textContent = '0';
+                totalGamePoints = 0;
+                if (gameScorePoints) gameScorePoints.textContent = '0';
+                updateRepetitionDots(0);
+                updateSessionProgress({
+                    mastered_questions: 0,
+                    total_questions: data.questions_count || 1,
+                    progress_percent: 0
+                });
+
+                loadNextQuestion();
+            })
+            .catch(err => {
+                console.error('Restart mistakes error:', err);
+                window.location.href = `/practice-quiz/restart-mistakes/${sessionId}`;
             })
             .finally(() => {
                 btn.disabled = false;
