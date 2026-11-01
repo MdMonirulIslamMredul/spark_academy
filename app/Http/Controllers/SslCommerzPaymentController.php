@@ -99,40 +99,36 @@ class SslCommerzPaymentController extends Controller
     }
     public function buybookpay(Request $request)
     {
-        if ($request->radio == "cash") {
+        if (in_array($request->radio, ['cash', 'bkash', 'nagad'])) {
             $request->validate([
                 'name' => 'required',
                 'phone' => 'required',
-                'email' => 'required',
                 'address' => 'required',
-                // 'radio' => 'required',
             ]);
 
             $total_order = DB::table('books_order')->count('id');
             $current_order = $total_order + 1;
-            $order_num = 'COD'.date("dmy").$current_order;
+            $prefix = strtoupper($request->radio);
+            $order_num = $prefix . date("dmy") . $current_order;
 
             $data = array();
             $data['name'] = $request->name;
-            $data['email'] = $request->email;
+            $data['email'] = $request->email ?: ($request->phone . '@sparkacademy.com');
             $data['phone'] = $request->phone;
             $data['address'] = $request->address;
             $data['pid'] = $request->pid;
             $data['price'] = $request->price;
             $data['quantity'] = $request->quantity;
-            $data['amount'] = $request->price*$request->quantity;
+            $data['amount'] = $request->price * $request->quantity;
             $data['orderNum'] = $order_num;
             $data['status'] = 'pending';
-            $data['payment_status'] = 'unpaid';
+            $data['payment_status'] = ($request->radio == 'cash' ? 'unpaid' : 'pending_verification');
             $data['date'] = Carbon::now();
 
-        // if ($request->order=="cash") {
-
-        // }
             DB::table('books_order')->insert($data);
 
-            return redirect('/orders-info/'.$order_num)->with('userSuccess', 'Order Confirmed Successfully.');
-        }else{
+            return redirect('/orders-info/'.$order_num)->with('userSuccess', 'বইটির অর্ডার সফলভাবে সম্পন্ন হয়েছে। আমাদের প্রতিনিধি দ্রুত যোগাযোগ করবেন।');
+        } else {
 
 
 
