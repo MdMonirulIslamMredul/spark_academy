@@ -134,7 +134,7 @@ Route::get('/book-details/{id}/{slug}',[FrontCon::class,"User_book_details"]);
 Route::get('/product-details/{id}/{slug}',[FrontCon::class,"User_product_details"]);
 
 Route::get('/checkout',[FrontCon::class,"Checkout"])->name('user.checkout');
-Route::get('/checkout',[FrontCon::class,"CheckoutSub"])->name('subscription.checkout');
+Route::get('/checkout-sub',[FrontCon::class,"CheckoutSub"])->name('subscription.checkout');
 Route::get('/checkout1',[FrontCon::class,"checkout1"])->name('checkout');
 Route::post('/confirm-checkout',[FrontCon::class,"Confirm_Checkout"])->name('user.confirm.checkout');
 Route::get('/ordres-info/{orderNum}',[FrontCon::class,"Check_orders"]);
@@ -204,6 +204,7 @@ Route::group(['middleware'=>'user_auth'], function() {
     Route::get('/api/practice-quiz/next/{id}', [PracticeQuizController::class, 'apiGetNextQuestion'])->name('practice_quiz.api.next');
     Route::post('/api/practice-quiz/submit/{id}', [PracticeQuizController::class, 'apiSubmitAnswer'])->name('practice_quiz.api.submit');
     Route::match(['get', 'post'], '/practice-quiz/restart/{id}', [PracticeQuizController::class, 'restartSession'])->name('practice_quiz.restart');
+    Route::match(['get', 'post'], '/practice-quiz/restart-mistakes/{id}', [PracticeQuizController::class, 'restartMistakesSession'])->name('practice_quiz.restart_mistakes');
     Route::get('/practice-quiz/review/{id}', [PracticeQuizController::class, 'review'])->name('practice_quiz.review');
 });
 
