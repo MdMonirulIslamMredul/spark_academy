@@ -1,4 +1,58 @@
 @extends('user.pages.test_master')
+
+@push('frontend_style')
+<style>
+    .spark-chapter-video-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+    .spark-chapter-video-item:last-child {
+        margin-bottom: 0;
+    }
+    .spark-chapter-video-item:hover {
+        border-color: #03c6bb;
+        box-shadow: 0 4px 12px rgba(3, 198, 187, 0.08);
+    }
+    .spark-chapter-video-item.is-locked {
+        background: #f8fafc;
+        border-style: dashed;
+        border-color: #cbd5e1;
+    }
+    .spark-chapter-video-title {
+        font-weight: 600;
+        font-size: 14.5px;
+        color: #0f172a;
+        margin: 0;
+    }
+    .spark-chapter-video-meta {
+        font-size: 12px;
+        color: #64748b;
+    }
+    html.dark-theme .spark-chapter-video-item {
+        background: #131f37 !important;
+        border-color: #243247 !important;
+    }
+    html.dark-theme .spark-chapter-video-item.is-locked {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+    }
+    html.dark-theme .spark-chapter-video-title {
+        color: #f8fafc !important;
+    }
+    html.dark-theme .spark-chapter-video-meta {
+        color: #94a3b8 !important;
+    }
+</style>
+@endpush
+
 @section('content')
 
 <!-- Start Hero / Breadcrumb Area -->
@@ -90,6 +144,113 @@
 
             <div class="col-lg-8">
                 <div class="course-details-content">
+                    @php
+                        $isEnrolled = (optional($order)->status == 'enrolled');
+                        $chaptersCollection = isset($chapters) ? $chapters : ($courseInfo->chapters ?? collect());
+
+                        $bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+                        $toBn = function ($num) use ($bnDigits) {
+                            return str_replace(range(0, 9), $bnDigits, (string) $num);
+                        };
+
+                        $totalChaptersCount = $chaptersCollection->count();
+                        $totalVideosCount = $chaptersCollection->sum(function ($ch) {
+                            return ($ch->videos ?? collect())->count();
+                        });
+                        $totalFreeVideosCount = $chaptersCollection->sum(function ($ch) {
+                            return ($ch->videos ?? collect())->where('free_paid', 'free')->count();
+                        });
+                        $freeChaptersCount = $chaptersCollection->filter(function ($ch) {
+                            return ($ch->videos ?? collect())->where('free_paid', 'free')->isNotEmpty();
+                        })->count();
+                        $firstFreeChapter = $chaptersCollection->first(function ($ch) {
+                            return ($ch->videos ?? collect())->where('free_paid', 'free')->isNotEmpty();
+                        });
+                        $progressPercent = $isEnrolled
+                            ? 100
+                            : ($totalChaptersCount > 0 ? max(8, (int) round(($freeChaptersCount / $totalChaptersCount) * 100)) : 0);
+                    @endphp
+
+                    <!-- Chapter Completion & Progress Tracker -->
+                    <div class="spark-course-progress-card p-4 rounded-4 mb-4" style="background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 18px rgba(7, 17, 38, 0.05);">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+                            <div>
+                                <span class="badge" style="background: rgba(255, 122, 0, 0.12); color: #ff7a00; font-weight: 700; font-size: 12px; padding: 5px 12px; border-radius: 6px;">
+                                    <i class="feather-trending-up me-1"></i> অধ্যায় ট্র্যাকার ও কারিকুলাম
+                                </span>
+                                <h4 class="mt-2 mb-0" style="font-weight: 800; color: #071126; font-size: 20px;">
+                                    কোর্সের অধ্যায় ও লেকচারসমূহ
+                                </h4>
+                            </div>
+                            <div class="text-end">
+                                <span style="font-size: 13px; color: #64748b; font-weight: 600;">কোর্স কাঠামো:</span>
+                                <div style="font-size: 18px; font-weight: 800; color: #ff7a00;">
+                                    @if($totalChaptersCount === 0)
+                                        কারিকুলাম শীঘ্রই আসছে
+                                    @elseif($isEnrolled)
+                                        {{ $toBn($totalChaptersCount) }}টি অধ্যায় • {{ $toBn($totalVideosCount) }}টি ভিডিও (আনলকড)
+                                    @elseif($freeChaptersCount > 0)
+                                        ফ্রি ট্রায়াল ({{ $toBn($freeChaptersCount) }}/{{ $toBn($totalChaptersCount) }} অধ্যায়)
+                                    @else
+                                        {{ $toBn($totalChaptersCount) }}টি অধ্যায় • {{ $toBn($totalVideosCount) }}টি ভিডিও
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress mt-3 mb-3" style="height: 10px; border-radius: 9999px; background: #e2e8f0;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ $progressPercent }}%; background: linear-gradient(90deg, #ff7a00 0%, #ea580c 100%); border-radius: 9999px;" aria-valuenow="{{ $progressPercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                        <!-- Dynamic Chapter Status Badges -->
+                        @if($totalChaptersCount > 0)
+                            <div class="d-flex flex-wrap gap-2 pt-1">
+                                @foreach($chaptersCollection as $chIdx => $ch)
+                                    @php
+                                        $chVideos = $ch->videos ?? collect();
+                                        $chFreeCount = $chVideos->where('free_paid', 'free')->count();
+                                        $chAllFree = $chVideos->isNotEmpty() && $chFreeCount === $chVideos->count();
+                                        $chHasFree = $chFreeCount > 0;
+                                    @endphp
+                                    <div class="d-flex align-items-center gap-1 px-2 py-1 rounded-3" style="font-size: 12px; font-weight: 600; {{ $chHasFree ? 'background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;' : ($isEnrolled ? 'background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;' : 'background: #f8fafc; color: #94a3b8; border: 1px dashed #cbd5e1;') }}">
+                                        @if($chAllFree)
+                                            <i class="feather-check-circle text-success"></i> অধ্যায়-{{ $toBn($chIdx + 1) }} (ফ্রি)
+                                        @elseif($chHasFree)
+                                            <i class="feather-unlock text-success"></i> অধ্যায়-{{ $toBn($chIdx + 1) }} (ফ্রি প্রিভিউ)
+                                        @elseif($isEnrolled)
+                                            <i class="feather-play-circle text-primary"></i> অধ্যায়-{{ $toBn($chIdx + 1) }}
+                                        @else
+                                            <i class="feather-lock text-muted"></i> অধ্যায়-{{ $toBn($chIdx + 1) }}
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    @if($totalFreeVideosCount > 0 && $firstFreeChapter)
+                        <!-- Free Chapter Trial Banner -->
+                        <div class="p-4 rounded-4 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, #071126 0%, #0d1e3d 100%); color: #fff; box-shadow: 0 8px 24px rgba(7, 17, 38, 0.15);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="width: 52px; height: 52px; border-radius: 14px; background: rgba(255, 122, 0, 0.2); color: #ff7a00; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+                                    <i class="feather-gift"></i>
+                                </div>
+                                <div>
+                                    <span class="badge bg-warning text-dark mb-1" style="font-size: 11px; font-weight: 800;">উন্মুক্ত ট্রায়াল ({{ $toBn($totalFreeVideosCount) }}টি ফ্রি ক্লাস)</span>
+                                    <h5 class="text-white mb-0" style="font-weight: 800; font-size: 18px;">ফ্রি ক্লাস করে দেখুন: {{ $firstFreeChapter->title }}</h5>
+                                    <p class="mb-0 text-white-50" style="font-size: 13px;">
+                                        {{ !empty($firstFreeChapter->description) ? $firstFreeChapter->description : 'এনরোল করার আগে ফ্রি ভিডিও লেকচারগুলো দেখে কোর্সের মান যাচাই করুন।' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="{{ route('free.lession', ['id' => $courseInfo->id, 'chapter' => $firstFreeChapter->id]) }}" class="rbt-btn btn-gradient radius-round btn-sm px-4 py-2" style="font-size: 14px;">
+                                    <i class="feather-play me-1"></i> ফ্রি ক্লাস দেখুন
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="rbt-course-feature-box rbt-shadow-box thuumbnail">
                         <img class="w-100" src="{{asset($courseInfo->image)}}" alt="{{ $courseInfo->name }}" style="max-height: 420px; object-fit: cover; border-radius: 12px;">
                     </div>
@@ -101,17 +262,8 @@
                                     <a href="#overview">Overview</a>
                                 </li>
                                 <li>
-                                    <a href="#coursecontent">Course Content</a>
+                                    <a href="#coursecontent">কোর্সের অধ্যায়সমূহ ({{ $toBn($totalChaptersCount) }})</a>
                                 </li>
-                                {{-- <li>
-                                    <a href="#details">Details</a>
-                                </li>
-                                <li>
-                                    <a href="#intructor">Intructor</a>
-                                </li>
-                                <li>
-                                    <a href="#review">Review</a>
-                                </li> --}}
                             </ul>
                         </nav>
                     </div>
@@ -120,64 +272,154 @@
                     <div class="rbt-course-feature-box overview-wrapper rbt-shadow-box mt--30 has-show-more" id="overview">
                         <div class="rbt-course-feature-inner has-show-more-inner-content">
                             <div class="section-title">
-                                <h4 class="rbt-title-style-3">What you'll learn</h4>
+                                <h4 class="rbt-title-style-3">কোর্স সম্পর্কে বিস্তারিত</h4>
                             </div>
                             <p>{!! $courseInfo->description !!}</p>
-
                         </div>
                         <div class="rbt-show-more-btn">Show More</div>
                     </div>
                     <!-- End Course Feature Box  -->
 
-                    <!-- Start Course Content  -->
+                    <!-- Start Course Content (Dynamic Chapters & Videos) -->
                     <div class="course-content rbt-shadow-box coursecontent-wrapper mt--30" id="coursecontent">
                         <div class="rbt-course-feature-inner">
-                            <div class="section-title">
-                                <h4 class="rbt-title-style-3">Course Content</h4>
+                            <div class="section-title mb-4">
+                                <h4 class="rbt-title-style-3">
+                                    {{ $totalChaptersCount > 0 ? $toBn($totalChaptersCount) . 'টি অধ্যায়ের সম্পূর্ণ কারিকুলাম' : 'কোর্স কারিকুলাম' }}
+                                </h4>
+                                <p style="color: #64748b; font-size: 14px; margin-top: 4px;">
+                                    মোট {{ $toBn($totalChaptersCount) }}টি অধ্যায় ও {{ $toBn($totalVideosCount) }}টি ভিডিও লেকচার।
+                                    @if(!$isEnrolled && $totalFreeVideosCount > 0)
+                                        ফ্রি লেকচারগুলো এনরোল ছাড়াই দেখতে পারবেন।
+                                    @elseif(!$isEnrolled)
+                                        এনরোল করার পর সকল অধ্যায়ের ক্লাস আনলক হবে।
+                                    @endif
+                                </p>
                             </div>
-                            <div class="rbt-accordion-style rbt-accordion-02 accordion">
-                                <div class="accordion" id="accordionExampleb2">
-                    
-                                    <div class="accordion-item card">
-                                        <h2 class="accordion-header card-header" id="headingTwo1">
-                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo1" aria-expanded="true" aria-controls="collapseTwo1">
-                                                Course {{ $courseInfo->name }} <span class="rbt-badge-5 ml--10"></span>
+                            <div class="rbt-accordion-style rbt-accordion-02 accordion" id="courseChaptersAccordion">
+                                @forelse($chaptersCollection as $index => $chapter)
+                                    @php
+                                        $videos = $chapter->videos ?? collect();
+                                        $chFreeCount = $videos->where('free_paid', 'free')->count();
+                                        $chAllFree = $videos->isNotEmpty() && $chFreeCount === $videos->count();
+                                        $chHasFree = $chFreeCount > 0;
+                                        $isOpen = ($index === 0);
+                                        $collapseKey = $chapter->id ?: ('legacy-' . $index);
+                                    @endphp
+                                    <div class="accordion-item card mb-3" style="border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden;">
+                                        <h2 class="accordion-header card-header p-0" id="chHeading{{ $collapseKey }}">
+                                            <button class="accordion-button {{ $isOpen ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#chCollapse{{ $collapseKey }}" aria-expanded="{{ $isOpen ? 'true' : 'false' }}" aria-controls="chCollapse{{ $collapseKey }}" style="padding: 16px 20px; font-weight: 700; color: #071126; font-size: 16px;">
+                                                <div class="d-flex flex-wrap align-items-center justify-content-between w-100 me-3 gap-2">
+                                                    <div>
+                                                        <span class="badge {{ $chHasFree ? 'bg-success' : ($isEnrolled ? 'bg-primary' : 'bg-secondary') }} me-2" style="font-size: 12px;">
+                                                            অধ্যায়-{{ $toBn($index + 1) }}
+                                                        </span>
+                                                        <span>{{ $chapter->title }}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-light text-dark border" style="font-size: 11px;">
+                                                            {{ $toBn($videos->count()) }}টি লেকচার
+                                                        </span>
+                                                        @if($chAllFree)
+                                                            <span class="badge bg-warning text-dark" style="font-size: 11px; font-weight: 800;">
+                                                                <i class="feather-unlock"></i> ফ্রি ক্লাস
+                                                            </span>
+                                                        @elseif($chHasFree && !$isEnrolled)
+                                                            <span class="badge bg-info text-dark" style="font-size: 11px; font-weight: 700;">
+                                                                <i class="feather-eye"></i> ফ্রি প্রিভিউ
+                                                            </span>
+                                                        @elseif($isEnrolled)
+                                                            <span class="badge bg-success text-white" style="font-size: 11px;">
+                                                                <i class="feather-check-circle"></i> আনলকড
+                                                            </span>
+                                                        @else
+                                                            <span class="badge bg-light text-muted" style="font-size: 11px;">
+                                                                <i class="feather-lock"></i> লকড
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             </button>
                                         </h2>
-                                        <div id="collapseTwo1" class="accordion-collapse collapse show" aria-labelledby="headingTwo1" data-bs-parent="#accordionExampleb2">
-                                            <div class="accordion-body card-body pr--0">
-                                                <ul class="rbt-course-main-content liststyle">
-                                                    @foreach ($courseInfo->courseModules as $module)
-                                                    <li>
-                                                        <a href="{{ $module->free_paid == 'free' ? route('free.lession', $courseInfo->id) : ($order && $order->status == 'enrolled' ? route('paid.lession', $courseInfo->id) : 'javascript:void(0)') }}">
-                                                            <div class="course-content-left">
-                                                                <i class="feather-play-circle"></i> <span class="text">{{ $module->title }}</span>
+                                        <div id="chCollapse{{ $collapseKey }}" class="accordion-collapse collapse {{ $isOpen ? 'show' : '' }}" aria-labelledby="chHeading{{ $collapseKey }}" data-bs-parent="#courseChaptersAccordion">
+                                            <div class="accordion-body card-body p-4" style="background: #fafbfc;">
+                                                @if(!empty($chapter->description))
+                                                    <p class="text-muted mb-3" style="font-size: 13.5px;">{{ $chapter->description }}</p>
+                                                @endif
+
+                                                @if($videos->isEmpty())
+                                                    <div class="p-3 text-center rounded-3" style="background: #fff; border: 1px dashed #cbd5e1;">
+                                                        <i class="feather-video text-muted" style="font-size: 22px;"></i>
+                                                        <p class="text-muted mb-0 mt-1" style="font-size: 13.5px;">
+                                                            এই অধ্যায়ের ভিডিও লেকচার শীঘ্রই যুক্ত করা হবে।
+                                                        </p>
+                                                    </div>
+                                                @else
+                                                    @foreach($videos as $vIdx => $video)
+                                                        @php
+                                                            $isVideoFree = ($video->free_paid === 'free');
+                                                            $canPlayVideo = ($isEnrolled || $isVideoFree);
+                                                            $playUrl = $isEnrolled
+                                                                ? route('paid.lession', ['id' => $courseInfo->id, 'chapter' => $chapter->id, 'video' => $video->id])
+                                                                : route('free.lession', ['id' => $courseInfo->id, 'chapter' => $chapter->id, 'video' => $video->id]);
+                                                        @endphp
+
+                                                        @if($canPlayVideo)
+                                                            <div class="spark-chapter-video-item">
+                                                                <div class="d-flex align-items-center gap-3">
+                                                                    <i class="feather-play-circle text-primary" style="font-size: 22px; flex-shrink: 0;"></i>
+                                                                    <div>
+                                                                        <p class="spark-chapter-video-title">{{ $video->title }}</p>
+                                                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-1 spark-chapter-video-meta">
+                                                                            @if(!empty($video->duration))
+                                                                                <span><i class="feather-clock me-1"></i>{{ $video->duration }}</span>
+                                                                            @endif
+                                                                            @if($isVideoFree)
+                                                                                <span class="badge bg-success text-white" style="font-size: 10.5px;">ফ্রি</span>
+                                                                            @else
+                                                                                <span class="badge bg-primary text-white" style="font-size: 10.5px;">আনলকড</span>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <a href="{{ $playUrl }}" class="rbt-btn btn-gradient radius-round btn-sm flex-shrink-0">
+                                                                    <span>দেখুন</span> <i class="feather-play ms-1"></i>
+                                                                </a>
                                                             </div>
-                                                            @if ($module->free_paid == 'free' || ($order && $order->status == 'enrolled'))
-                                                            <div class="course-content-right">
-                                                                <span class="min-lable"></span>
-                                                                <span class="rbt-badge variation-03 bg-primary-opacity"><i class="feather-eye"></i> Preview</span>
+                                                        @else
+                                                            <div class="spark-chapter-video-item is-locked">
+                                                                <div class="d-flex align-items-center gap-3">
+                                                                    <i class="feather-lock text-muted" style="font-size: 20px; flex-shrink: 0;"></i>
+                                                                    <div>
+                                                                        <p class="spark-chapter-video-title">{{ $video->title }}</p>
+                                                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-1 spark-chapter-video-meta">
+                                                                            @if(!empty($video->duration))
+                                                                                <span><i class="feather-clock me-1"></i>{{ $video->duration }}</span>
+                                                                            @endif
+                                                                            <span class="badge bg-secondary text-white" style="font-size: 10.5px;">পেইড</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <a href="#buyForm" class="rbt-btn btn-border radius-round btn-sm flex-shrink-0" style="font-size: 12px; padding: 6px 14px;">
+                                                                    এনরোল করুন
+                                                                </a>
                                                             </div>
-                                                            @else
-                                                            <div class="course-content-right">
-                                                                <span class="course-lock"><i class="feather-lock"></i></span>
-                                                            </div>
-                                                            @endif
-                                                        </a>
-                                                    </li>
+                                                        @endif
                                                     @endforeach
-                                                </ul>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
-                    
-                                    {{-- Additional accordion items can be added here as needed --}}
-                                    
-                                </div>
+                                @empty
+                                    <div class="p-4 text-center rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                                        <i class="feather-book-open text-muted" style="font-size: 28px;"></i>
+                                        <p class="text-muted mb-0 mt-2">কোর্সের অধ্যায় ও ভিডিও শীঘ্রই যুক্ত করা হবে।</p>
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- End Course Content  -->
 
                     <!-- Start Course Feature Box  -->

@@ -56,7 +56,7 @@
                         </div>
                         <div class="modern-course-body">
                             <div class="modern-course-meta">
-                                <span><i class="feather-book-open"></i> 20 Lessons</span>
+                                <span><i class="feather-book-open"></i> {{ $course->chapters_count ?? $course->chapters->count() }} Chapters • {{ $course->course_modules_count ?? $course->courseModules->count() }} Videos</span>
                                 <span><i class="feather-users"></i> 40+ Students</span>
                             </div>
                             <h4 class="modern-course-title">

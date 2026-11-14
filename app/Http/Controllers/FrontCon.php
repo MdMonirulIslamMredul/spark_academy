@@ -7,6 +7,7 @@ use Image;
 use App\Models\User;
 use App\Models\Course;
 use App\Mail\MyTestMail;
+use App\Models\CourseChapter;
 use App\Models\CourseModule;
 use Illuminate\Http\Request;
 use App\Models\WrittenResult;
@@ -79,9 +80,96 @@ class FrontCon extends Controller
         return view('user.pages.exams.cat_all_exams', compact('MCQexams', 'WrittenExams', 'catInfo'));
     }
     //End:: Category to Exams page
+    /**
+     * Load ordered chapters and nested videos for a course, including any legacy uncategorized videos.
+     */
+    private function buildCourseChaptersForDisplay(int $courseId, bool $freeOnly = false)
+    {
+        $chaptersQuery = CourseChapter::where('course_id', $courseId)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('id', 'asc');
+
+        if ($freeOnly) {
+            $chaptersQuery->whereHas('videos', function ($q) {
+                $q->where('free_paid', 'free');
+            })->with(['videos' => function ($q) {
+                $q->where('free_paid', 'free')
+                    ->orderBy('sort_order', 'asc')
+                    ->orderBy('id', 'asc');
+            }]);
+        } else {
+            $chaptersQuery->with('videos');
+        }
+
+        $chapters = $chaptersQuery->get();
+
+        $orphanVideos = CourseModule::where('course_id', $courseId)
+            ->whereNull('chapter_id')
+            ->when($freeOnly, function ($q) {
+                $q->where('free_paid', 'free');
+            })
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        if ($orphanVideos->isNotEmpty()) {
+            $fallback = new CourseChapter([
+                'course_id' => $courseId,
+                'title' => 'Additional Lectures',
+                'description' => null,
+                'sort_order' => $chapters->count() + 1,
+            ]);
+            $fallback->id = 0;
+            $fallback->setRelation('videos', $orphanVideos);
+            $chapters->push($fallback);
+        }
+
+        return $chapters;
+    }
+
+    /**
+     * Resolve which chapter and video should be expanded and active on initial player load.
+     */
+    private function resolveInitialPlayerSelection($chapters, $requestedChapterId, $requestedVideoId, bool $freePlayableOnly = false): array
+    {
+        $selectedChapterId = is_numeric($requestedChapterId) ? (int) $requestedChapterId : null;
+        $selectedVideoId = is_numeric($requestedVideoId) ? (int) $requestedVideoId : null;
+        $isPlayable = function ($video) use ($freePlayableOnly) {
+            return !$freePlayableOnly || ($video->free_paid === 'free');
+        };
+
+        if ($selectedVideoId !== null) {
+            foreach ($chapters as $chapter) {
+                $found = $chapter->videos->firstWhere('id', $selectedVideoId);
+                if ($found && $isPlayable($found)) {
+                    return [(int) $chapter->id, (int) $found->id];
+                }
+            }
+        }
+
+        if ($selectedChapterId !== null) {
+            $chapter = $chapters->firstWhere('id', $selectedChapterId);
+            if ($chapter) {
+                $playable = $chapter->videos->first($isPlayable);
+                if ($playable) {
+                    return [(int) $chapter->id, (int) $playable->id];
+                }
+            }
+        }
+
+        foreach ($chapters as $chapter) {
+            $playable = $chapter->videos->first($isPlayable);
+            if ($playable) {
+                return [(int) $chapter->id, (int) $playable->id];
+            }
+        }
+
+        return [optional($chapters->first())->id, null];
+    }
+
     //Beging:: Course page
     public function course() {
-        $course = Course::with('courseModules')
+        $course = Course::with(['chapters.videos', 'courseModules'])
             ->where(function($q) {
                 $q->where('name', 'like', '%Physics%')
                   ->orWhere('name', 'like', '%HSC%');
@@ -89,7 +177,7 @@ class FrontCon extends Controller
             ->first();
 
         if (!$course) {
-            $course = Course::with('courseModules')->first();
+            $course = Course::with(['chapters.videos', 'courseModules'])->first();
         }
         return view('user.pages.extra.course_category', compact('course'));
     }
@@ -100,52 +188,50 @@ class FrontCon extends Controller
         return view('user.pages.all_courses.all_courses');
     }
     public function course_details($id) {
-        $courseInfo = Course::with('courseModules')->findOrFail($id);
+        $courseInfo = Course::with(['chapters.videos', 'courseModules'])->findOrFail($id);
+        $chapters = $this->buildCourseChaptersForDisplay((int) $id, false);
         $userID = Cookie::get('user_id');
         $order = DB::table('courses_order')
             ->where('course_id', $id)
             ->where('user_id', $userID)
-            ->first(); // Will be null if no order found
-        // dd($order);
-        return view('user.pages.extra.course_details', compact('courseInfo', 'order'));
+            ->first();
+
+        return view('user.pages.extra.course_details', compact('courseInfo', 'chapters', 'order'));
     }
     public function free_lession($id) {
         if (!is_numeric($id)) {
             abort(404, 'Course not found');
         }
-    
-        // Fetch course information
-        $courseInfo = DB::table('courses')->where('id', $id)->first();
-    
-        // Check if course exists
+
+        $courseInfo = Course::find($id);
         if (!$courseInfo) {
             abort(404, 'Course not found');
         }
-    
-        // Fetch modules for the course
-        $modules = CourseModule::where('course_id', $id)
-            ->where('free_paid', 'free')
-            ->get();
-    
-        // Optionally, you might fetch the course order if needed
-        // Remove this if not used
-        // $courseOrder = DB::table('courses_order')->where('pid', $courseInfo->id)->get();
-    
-        // Return view with course information and modules
-        return view('user.pages.extra.free_lession', compact('courseInfo', 'modules'));
+
+        $chapters = $this->buildCourseChaptersForDisplay((int) $id, false);
+        [$selectedChapterId, $selectedVideoId] = $this->resolveInitialPlayerSelection(
+            $chapters,
+            request()->query('chapter'),
+            request()->query('video'),
+            true
+        );
+
+        return view('user.pages.extra.free_lession', compact('courseInfo', 'chapters', 'selectedChapterId', 'selectedVideoId'));
     }
     public function course_lession($id) {
-        $userID = Cookie::get('user_id');
-        $userName = Cookie::get('user_name');
-        $courseInfo = DB::table('courses')->where('id', $id)->first();
-        $modules = CourseModule::where('course_id' ,$id)->get();
-        $courseOrder = DB::table('courses_order')->where('pid',$courseInfo->id)->get();
+        $courseInfo = Course::findOrFail($id);
+        $chapters = $this->buildCourseChaptersForDisplay((int) $id, false);
+        [$selectedChapterId, $selectedVideoId] = $this->resolveInitialPlayerSelection(
+            $chapters,
+            request()->query('chapter'),
+            request()->query('video')
+        );
 
-        return view('user.pages.extra.lession', compact('courseInfo','modules'));
+        return view('user.pages.extra.lession', compact('courseInfo', 'chapters', 'selectedChapterId', 'selectedVideoId'));
     }
     public function course_cats($id) {
         $course_category = CourseCategory::with('courses')->where('id', $id)->firstOrFail();
-        $courses = $course_category->courses()->paginate(6);
+        $courses = $course_category->courses()->withCount(['chapters', 'courseModules'])->paginate(6);
 
         return view('user.pages.extra.course', compact('course_category', 'courses'));
     }
