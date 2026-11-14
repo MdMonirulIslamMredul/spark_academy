@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Image ;
 use App\Models\Course;
+use App\Models\CourseChapter;
 use App\Models\CourseModule;
 
 class ExamCon extends Controller
@@ -589,131 +590,206 @@ class ExamCon extends Controller
      // End:: Sum written exam Result
 
 
-    public function add_course () {
-        $categories = DB::table('course_categories')->get();
-       return view('cms.course.create',compact('categories'));
+    /**
+     * Validate course metadata and nested chapters/videos payload.
+     */
+    private function validateCourseRequest(Request $request, bool $isCreate): array
+    {
+        return $request->validate([
+            'catID' => 'required',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'image' => ($isCreate ? 'required' : 'nullable') . '|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            'description' => 'nullable|string',
+            'rank' => 'nullable|integer',
+            'chapters' => 'nullable|array',
+            'chapters.*.id' => 'nullable|integer',
+            'chapters.*.title' => 'required|string|max:255',
+            'chapters.*.description' => 'nullable|string',
+            'chapters.*.sort_order' => 'nullable|integer|min:0',
+            'chapters.*.videos' => 'nullable|array',
+            'chapters.*.videos.*.id' => 'nullable|integer',
+            'chapters.*.videos.*.title' => 'required|string|max:255',
+            'chapters.*.videos.*.link' => 'required|string|max:2000',
+            'chapters.*.videos.*.duration' => 'nullable|string|max:100',
+            'chapters.*.videos.*.free_paid' => 'required|in:free,paid',
+            'chapters.*.videos.*.sort_order' => 'nullable|integer|min:0',
+        ], [], [
+            'catID' => 'course category',
+            'chapters.*.title' => 'chapter title',
+            'chapters.*.videos.*.title' => 'video name',
+            'chapters.*.videos.*.link' => 'video link',
+            'chapters.*.videos.*.free_paid' => 'free/paid status',
+        ]);
     }
-    public function course_list() {
 
-        $courses=Course::all();
-
-       return view('cms.course.list',compact('courses'));
-    }
-    public function Add_course_Confirm(Request $request) {
-
-
-        $course=new Course;
-        $course->catID=$request->catID;
-        $course->name=$request->name;
-        $course->price=$request->price;
-         $course->description=$request->description;
-        $course->active=1;
-        $about_image = $request->file('image');
-
-        $name_gen = hexdec(uniqid()).".".$about_image->getClientOriginalExtension();
-        Image::make($about_image)->resize(800, 630)->save('images/'.$name_gen);
-        $last_img = 'images/'.$name_gen;
-          $course->image=$last_img;
-          $course->save();
-        CourseModule::newModule($request->titles, $request->links, $request->free_paid, $course->id);
-
-       return redirect('/cms/course/list')->with('status', 'New Course Added Successfully');
-    }
-    public function update_course_Confirm(Request $request, $id)
-{
-    $course = Course::find($id);
-    $course->catID = $request->catID;
-    $course->name = $request->name;
-    $course->price = $request->price;
-    $course->description = $request->description;
-    $course->rank = $request->rank;
-    $course->active = 1;
-    $about_image = $request->file('image');
-
-    if ($about_image) {
-        if (!empty($course->image) && file_exists($course->image)) {
-            unlink($course->image);
+    /**
+     * Save uploaded course image into public/images and return relative path.
+     */
+    private function storeCourseImage($uploadedImage): string
+    {
+        $dir = public_path('images');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
         }
-        $name_gen = hexdec(uniqid()) . "." . $about_image->getClientOriginalExtension();
-        Image::make($about_image)->resize(800, 630)->save('images/' . $name_gen);
-        $course->image = 'images/' . $name_gen;
+
+        $nameGen = hexdec(uniqid()) . '.' . $uploadedImage->getClientOriginalExtension();
+        Image::make($uploadedImage)->resize(800, 630)->save($dir . DIRECTORY_SEPARATOR . $nameGen);
+
+        return 'images/' . $nameGen;
     }
 
-    $course->save();
+    /**
+     * Delete existing course image from public directory if present.
+     */
+    private function removeCourseImage(?string $relativePath): void
+    {
+        if (empty($relativePath)) {
+            return;
+        }
 
-    // Handle Course Modules
-    $existingModules = CourseModule::where('course_id', $course->id)->get();
-    $submittedTitles = $request->titles;
-    $submittedLinks = $request->links;
-    $submittedFreePaid = $request->free_paid;
-
-    // foreach ($existingModules as $module) {
-    //     if (!in_array($module->title, $submittedTitles)) {
-    //         $module->delete(); // Delete module if it's not in the submitted data
-    //     }
-    // }
-
-    foreach ($submittedTitles as $index => $title) {
-        // Check if the module already exists
-        $module = CourseModule::where('course_id', $course->id)
-                              ->where('title', $title)
-                              ->first();
-
-        if ($module) {
-            // Update existing module
-            $module->link = $submittedLinks[$index];
-            $module->free_paid = $submittedFreePaid[$index];
-            $module->save();
-        } else {
-            // Create new module
-            CourseModule::create([
-                'course_id' => $course->id,
-                'title' => $title,
-                'link' => $submittedLinks[$index],
-                'free_paid' => $submittedFreePaid[$index],
-            ]);
+        $publicPath = public_path($relativePath);
+        if (file_exists($publicPath)) {
+            unlink($publicPath);
+        } elseif (file_exists($relativePath)) {
+            unlink($relativePath);
         }
     }
 
-    return redirect()->back()->with('status', 'Course Updated Successfully');
-}
-
-    public function deactivecourse($id) {
-
-        $course=Course::find($id);
-        $course->active=0;
-          $course->save();
-       return back()->with('status', 'Deactive Successfully');;
-    }
-    public function activecourse($id) {
-
-        $course=Course::find($id);
-        $course->active=1;
-          $course->save();
-       return back()->with('status', 'Active Successfully');;
-    }
-
-    public function editcourse($id) {
-
-        $course=Course::find($id);
+    public function add_course()
+    {
         $categories = DB::table('course_categories')->get();
-        $modules = CourseModule::where('course_id',$id)->get();
-
-       return view('cms.course.edit',compact('course','categories','modules'));
+        return view('cms.course.create', compact('categories'));
     }
 
-    public function deleteCourse($id) {
-        // Retrieve the teacher record to get the image path
-        $course=Course::find($id);
+    public function course_list()
+    {
+        $courses = Course::withCount(['chapters', 'courseModules'])->get();
+        return view('cms.course.list', compact('courses'));
+    }
 
-        if ($course) {
-            // Delete the image file if it exists
-            if (file_exists($course->image)) {
-                unlink($course->image);
+    public function Add_course_Confirm(Request $request)
+    {
+        $this->validateCourseRequest($request, true);
+
+        DB::transaction(function () use ($request) {
+            $course = new Course;
+            $course->catID = $request->catID;
+            $course->name = $request->name;
+            $course->price = $request->price;
+            $course->description = $request->description;
+            $course->active = 1;
+
+            if ($request->hasFile('image')) {
+                $course->image = $this->storeCourseImage($request->file('image'));
             }
 
-            // Delete the teacher record from the database
-            $course->delete();
+            $course->save();
+            $course->syncChaptersAndVideos($request->input('chapters', []));
+        });
+
+        return redirect('/cms/course/list')->with('status', 'New Course Added Successfully');
+    }
+
+    public function update_course_Confirm(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+        $this->validateCourseRequest($request, false);
+
+        DB::transaction(function () use ($request, $course) {
+            $course->catID = $request->catID;
+            $course->name = $request->name;
+            $course->price = $request->price;
+            $course->description = $request->description;
+            $course->rank = $request->rank;
+            $course->active = 1;
+
+            if ($request->hasFile('image')) {
+                $this->removeCourseImage($course->image);
+                $course->image = $this->storeCourseImage($request->file('image'));
+            }
+
+            $course->save();
+            $course->syncChaptersAndVideos($request->input('chapters', []));
+        });
+
+        return redirect()->back()->with('status', 'Course Updated Successfully');
+    }
+
+    public function deactivecourse($id)
+    {
+        $course = Course::findOrFail($id);
+        $course->active = 0;
+        $course->save();
+        return back()->with('status', 'Deactive Successfully');
+    }
+
+    public function activecourse($id)
+    {
+        $course = Course::findOrFail($id);
+        $course->active = 1;
+        $course->save();
+        return back()->with('status', 'Active Successfully');
+    }
+
+    public function editcourse($id)
+    {
+        $course = Course::with(['chapters.videos', 'courseModules'])->findOrFail($id);
+        $categories = DB::table('course_categories')->get();
+
+        $chaptersData = $course->chapters->map(function ($chapter) {
+            return [
+                'id' => $chapter->id,
+                'title' => $chapter->title,
+                'description' => $chapter->description,
+                'sort_order' => $chapter->sort_order,
+                'videos' => $chapter->videos->map(function ($video) {
+                    return [
+                        'id' => $video->id,
+                        'title' => $video->title,
+                        'link' => $video->link,
+                        'duration' => $video->duration,
+                        'free_paid' => $video->free_paid === 'free' ? 'free' : 'paid',
+                        'sort_order' => $video->sort_order,
+                    ];
+                })->values()->all(),
+            ];
+        })->values()->all();
+
+        $orphanVideos = $course->courseModules->whereNull('chapter_id');
+        if ($orphanVideos->isNotEmpty()) {
+            $chaptersData[] = [
+                'id' => '',
+                'title' => 'Uncategorized Videos',
+                'description' => '',
+                'sort_order' => count($chaptersData) + 1,
+                'videos' => $orphanVideos->values()->map(function ($video, $index) {
+                    return [
+                        'id' => $video->id,
+                        'title' => $video->title,
+                        'link' => $video->link,
+                        'duration' => $video->duration,
+                        'free_paid' => $video->free_paid === 'free' ? 'free' : 'paid',
+                        'sort_order' => $video->sort_order ?: ($index + 1),
+                    ];
+                })->all(),
+            ];
+        }
+
+        return view('cms.course.edit', compact('course', 'categories', 'chaptersData'));
+    }
+
+    public function deleteCourse($id)
+    {
+        $course = Course::find($id);
+
+        if ($course) {
+            DB::transaction(function () use ($course) {
+                $this->removeCourseImage($course->image);
+                CourseModule::where('course_id', $course->id)->delete();
+                CourseChapter::where('course_id', $course->id)->delete();
+                $course->delete();
+            });
 
             return redirect()->route('cms.course.list')->with('status', 'Course Deleted Successfully');
         }

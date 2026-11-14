@@ -16,6 +16,7 @@
                                             <th>SI</th>
                                             <th>Course Name</th>
                                             <th>Price</th>
+                                            <th>Curriculum</th>
                                             <th>Status</th>
                                             <th>Rank</th>
                                             <th>Action</th>
@@ -28,6 +29,10 @@
                                                 <th>{{ $i += 1 }}</th>
                                                 <td>{{ $course->name }}</td>
                                                 <td>{{ $course->price }}</td>
+                                                <td>
+                                                    <span class="badge badge-info">{{ $course->chapters_count ?? 0 }} Chapters</span>
+                                                    <span class="badge badge-secondary">{{ $course->course_modules_count ?? 0 }} Videos</span>
+                                                </td>
                                                 @if ($course->active == 1)
                                                     <td>Active</td>
                                                 @else
@@ -74,7 +79,7 @@
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="btn btn-danger"
-                                                                    onclick="return confirm('Are you sure you want to delete this teacher?')">Delete</button>
+                                                                    onclick="return confirm('Are you sure you want to delete this course?')">Delete</button>
                                                             </form>
                                                         </div>
                                                     </div>
