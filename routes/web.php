@@ -69,12 +69,15 @@ Route::get('/category/{id}/{url}', [FrontCon::class,"Category_To_CAT_exam_page"]
 Route::get('/course', [FrontCon::class,"course"])->name('course');
 // Route::get('/course', [FrontCon::class,"course"])->name('course.category');
 Route::get('/course/{id}', [FrontCon::class,"course_details"])->name('course.detail');
+Route::get('/free-lession/{id}', [FrontCon::class,"free_lession"])->name('free.lession');
 Route::get('/course-category/{id}', [FrontCon::class,"course_cats"])->name('cat');
 Route::post('/contact-form', [FrontCon::class,"contact_form"])->name('contact.form');
 Route::get('/all_courses', [FrontCon::class,"all_courses"])->name('all.courses');
 
-// Practice Quiz (Gamified Spaced-Repetition)
+// Practice Quiz (Gamified Spaced-Repetition & Chapter Mastery)
 Route::get('/practice-quizzes', [PracticeQuizController::class, 'index'])->name('practice_quiz.index');
+Route::get('/practice-subject/{slug}', [PracticeQuizController::class, 'subjectShow'])->name('practice_quiz.subject');
+Route::get('/practice-chapter/{slug}', [PracticeQuizController::class, 'chapterShow'])->name('practice_quiz.chapter');
 Route::get('/practice-quiz/{slug}', [PracticeQuizController::class, 'show'])->name('practice_quiz.show');
 
 Route::get('/buycourse',[FrontCon::class,"buycourse"])->name('user.buycourse');
@@ -163,7 +166,6 @@ Route::group(['middleware'=>'user_auth'], function() {
     Route::get('/my-account-exams', [FrontCon::class, 'MyAccountPageexam'])->name('user.myaccount.exam');
     Route::get('/my-account-orders', [FrontCon::class, 'MyAccountPageorder'])->name('user.myaccount.order');
     Route::get('/my-account-dashboard', [FrontCon::class, 'MyAccountPagedashboard'])->name('user.myaccount.dashboard');
-    Route::get('/free-lession/{id}', [FrontCon::class,"free_lession"])->name('free.lession');
     Route::get('/lession/{id}/{userID?}', [FrontCon::class,"course_lession"])->name('lession')->middleware('enroll_check');
     Route::get('/paid-lession/{id}', [FrontCon::class,"course_lession"])->name('paid.lession')->middleware('enroll_check');
 
@@ -206,6 +208,14 @@ Route::group(['middleware'=>'user_auth'], function() {
     Route::match(['get', 'post'], '/practice-quiz/restart/{id}', [PracticeQuizController::class, 'restartSession'])->name('practice_quiz.restart');
     Route::match(['get', 'post'], '/practice-quiz/restart-mistakes/{id}', [PracticeQuizController::class, 'restartMistakesSession'])->name('practice_quiz.restart_mistakes');
     Route::get('/practice-quiz/review/{id}', [PracticeQuizController::class, 'review'])->name('practice_quiz.review');
+
+    // Chapter Exam & Mistake Recovery Game
+    Route::get('/practice-chapter/{chapterId}/exam/start', [PracticeQuizController::class, 'startChapterExam'])->name('practice_quiz.exam.start');
+    Route::get('/practice-chapter/exam/{attemptId}', [PracticeQuizController::class, 'takeChapterExam'])->name('practice_quiz.exam.take');
+    Route::post('/api/practice-chapter/exam/{attemptId}/autosave', [PracticeQuizController::class, 'autosaveChapterExamAnswer'])->name('practice_quiz.exam.autosave');
+    Route::post('/practice-chapter/exam/{attemptId}/submit', [PracticeQuizController::class, 'submitChapterExam'])->name('practice_quiz.exam.submit');
+    Route::get('/practice-chapter/exam/{attemptId}/result', [PracticeQuizController::class, 'chapterExamResult'])->name('practice_quiz.exam.result');
+    Route::get('/practice-chapter/{chapterId}/mistake-game/start', [PracticeQuizController::class, 'startChapterMistakeGame'])->name('practice_quiz.mistake_game.start');
 });
 
 
@@ -417,7 +427,27 @@ Route::group(['middleware'=>'admin_auth'], function() {
     Route::post('/cms/written-questions-csv-confirm', [ExamCon::class, 'Written_questions_CSV_Confirm'])->name('cms.written_questions_csv_confirm');
     // End:: Questions CSV
 
-    // Begin:: Practice Quizzes (Gamified Preparation)
+    // Begin:: Practice Quizzes, Subjects, Chapters & Levels
+    Route::get('/cms/practice-subjects', [PracticeQuizAdminController::class, 'subjectsIndex'])->name('cms.practice_subjects');
+    Route::get('/cms/practice-subjects/create', [PracticeQuizAdminController::class, 'subjectCreate'])->name('cms.practice_subject.create');
+    Route::post('/cms/practice-subjects/store', [PracticeQuizAdminController::class, 'subjectStore'])->name('cms.practice_subject.store');
+    Route::get('/cms/practice-subjects/edit/{id}', [PracticeQuizAdminController::class, 'subjectEdit'])->name('cms.practice_subject.edit');
+    Route::post('/cms/practice-subjects/update/{id}', [PracticeQuizAdminController::class, 'subjectUpdate'])->name('cms.practice_subject.update');
+    Route::match(['get', 'delete'], '/cms/practice-subjects/delete/{id}', [PracticeQuizAdminController::class, 'subjectDestroy'])->name('cms.practice_subject.delete');
+    Route::get('/cms/practice-subjects/toggle/{id}', [PracticeQuizAdminController::class, 'subjectToggle'])->name('cms.practice_subject.toggle');
+
+    Route::get('/cms/practice-subjects/{subjectId}/chapters', [PracticeQuizAdminController::class, 'chaptersIndex'])->name('cms.practice_chapters');
+    Route::get('/cms/practice-subjects/{subjectId}/chapters/create', [PracticeQuizAdminController::class, 'chapterCreate'])->name('cms.practice_chapter.create');
+    Route::post('/cms/practice-subjects/{subjectId}/chapters/store', [PracticeQuizAdminController::class, 'chapterStore'])->name('cms.practice_chapter.store');
+    Route::get('/cms/practice-subjects/{subjectId}/chapters/edit/{chapterId}', [PracticeQuizAdminController::class, 'chapterEdit'])->name('cms.practice_chapter.edit');
+    Route::post('/cms/practice-subjects/{subjectId}/chapters/update/{chapterId}', [PracticeQuizAdminController::class, 'chapterUpdate'])->name('cms.practice_chapter.update');
+    Route::match(['get', 'delete'], '/cms/practice-subjects/{subjectId}/chapters/delete/{chapterId}', [PracticeQuizAdminController::class, 'chapterDestroy'])->name('cms.practice_chapter.delete');
+    Route::get('/cms/practice-subjects/{subjectId}/chapters/toggle/{chapterId}', [PracticeQuizAdminController::class, 'chapterToggle'])->name('cms.practice_chapter.toggle');
+
+    Route::get('/cms/practice-chapters/{chapterId}/levels', [PracticeQuizAdminController::class, 'levelsIndex'])->name('cms.practice_chapter.levels');
+    Route::get('/cms/practice-chapters/{chapterId}/levels/create', [PracticeQuizAdminController::class, 'levelCreate'])->name('cms.practice_chapter.level.create');
+    Route::post('/cms/practice-chapters/{chapterId}/levels/store', [PracticeQuizAdminController::class, 'levelStore'])->name('cms.practice_chapter.level.store');
+
     Route::get('/cms/practice-quizzes', [PracticeQuizAdminController::class, 'index'])->name('cms.practice_quizzes');
     Route::get('/cms/practice-quizzes/create', [PracticeQuizAdminController::class, 'create'])->name('cms.practice_quiz.create');
     Route::post('/cms/practice-quizzes/store', [PracticeQuizAdminController::class, 'store'])->name('cms.practice_quiz.store');
