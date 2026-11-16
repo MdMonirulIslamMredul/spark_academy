@@ -196,7 +196,7 @@ $courses = DB::table('courses')
                                         @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9;">
                                             <td class="py-3 px-4">
-                                                <div style="font-weight: 700; color: #0f172a; font-size: 15px;">{{ $ps->quiz->title ?? 'Practice Quiz' }}</div>
+                                                <div style="font-weight: 700; color: #0f172a; font-size: 15px;">{{ $ps->display_title }}</div>
                                                 <div class="text-muted" style="font-size: 12px;">Session #{{ $ps->id }}</div>
                                             </td>
                                             <td class="py-3 px-3">

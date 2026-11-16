@@ -99,7 +99,7 @@ $completedPracticeQuizzes = \App\Models\PracticeSession::where('user_id', option
                                                 <span class="text-muted small" style="font-size: 13px;">You have an unfinished preparation quiz</span>
                                             </div>
                                             <h5 class="mb-1" style="font-weight: 700; color: #0f172a;">
-                                                {{ $unf->quiz->title ?? 'Preparation Quiz' }}
+                                                {{ $unf->display_title }}
                                             </h5>
                                             <div class="d-flex align-items-center gap-3 text-muted small">
                                                 <span><i class="feather-check-circle text-success"></i> <strong>{{ $unf->mastered_questions }}</strong> of {{ $unf->total_questions }} mastered</span>
