@@ -11,7 +11,7 @@ $FooterfreeExams = DB::table('exams')->where('free_paid', 'free')->limit(5)->get
 
                 <div class="col-lg-3 col-md-4">
                     <div class="footer-widget">
-                        <img src="{{ asset(optional($company_info)->logo) }}" class="img-footer" alt="">
+                        <img src="{{ asset(optional($company_info)->logo) }}" class="img-footer spark-footer-logo" alt="" style="border-radius: 12px; max-height: 52px; width: auto; object-fit: contain;">
                         <div class="footer-add">
                             <p>{{ optional($company_info)->address }}</p>
                             <p>{{ optional($company_info)->phone_1 }}, {{ optional($company_info)->phone_2 }}</p>

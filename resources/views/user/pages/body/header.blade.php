@@ -108,8 +108,8 @@
         <nav id="navigation" class="navigation-landscape nav-container">
             <div class="nav-header">
                 <a class="py-1" href="{{ route('/') }}">
-                    <img src="{{ asset(optional($company_info)->logo) }}" class="img-fluid" alt="{{ optional($company_info)->company_name ?? 'Logo' }}"
-                        title="{{ optional($company_info)->company_name }}" style="max-height: 52px; width: auto; object-fit: contain;">
+                    <img src="{{ asset(optional($company_info)->logo) }}" class="img-fluid spark-header-logo" alt="{{ optional($company_info)->company_name ?? 'Logo' }}"
+                        title="{{ optional($company_info)->company_name }}" style="max-height: 52px; width: auto; object-fit: contain; border-radius: 12px;">
                 </a>
                 <div class="nav-header-actions">
                     <button type="button" class="theme-toggle-btn" aria-label="Toggle dark mode" title="Toggle dark mode">

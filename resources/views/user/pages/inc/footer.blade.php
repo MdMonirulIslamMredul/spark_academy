@@ -12,7 +12,7 @@
                     <div class="footer-widget">
                         <div class="footer-logo-wrap">
                             <a href="/">
-                                <img src="{{ asset(optional($company_info)->logo) }}" alt="{{ optional($company_info)->company_name ?? 'Logo' }}" style="max-height: 52px; width: auto; object-fit: contain;">
+                                <img src="{{ asset(optional($company_info)->logo) }}" class="spark-footer-logo" alt="{{ optional($company_info)->company_name ?? 'Logo' }}" style="max-height: 52px; width: auto; object-fit: contain; border-radius: 12px;">
                             </a>
                         </div>
 
@@ -54,7 +54,7 @@
                         <h5 class="ft-title">Quick Links</h5>
                         <ul class="ft-link">
                             <li>
-                                <a href="{{ route('user.about_us') }}">About Us</a>
+                                <a href="{{ route('user.about_us') }}">আমাদের সম্পর্কে</a>
                             </li>
                             <li>
                                 <a href="{{ route('user.teachers') }}">Our Mentors</a>
@@ -129,8 +129,3 @@
     </div>
 </div>
 <!-- End Copyright Area  -->
-<div class="rbt-progress-parent">
-    <svg class="rbt-back-circle svg-inner" width="100%" height="100%" viewBox="-1 -1 102 102">
-        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
-    </svg>
-</div>

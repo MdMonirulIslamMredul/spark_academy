@@ -133,7 +133,7 @@
                     <div class="header-info">
                         <div class="logo_image">
                             <a href="/">
-                                <img src="{{ asset(optional($company_info)->logo) }}" class="img-fluid" alt="{{ optional($company_info)->company_name ?? 'Logo' }}" style="max-height: 52px; width: auto; object-fit: contain;">
+                                <img src="{{ asset(optional($company_info)->logo) }}" class="img-fluid spark-header-logo" alt="{{ optional($company_info)->company_name ?? 'Logo' }}" style="max-height: 52px; width: auto; object-fit: contain; border-radius: 12px;">
                             </a>
                         </div>
                     </div>
@@ -142,23 +142,25 @@
                 <div class="rbt-main-navigation d-none d-xl-block">
                     <nav class="mainmenu-nav">
                         <ul class="mainmenu">
-                            <li class="with-megamenu has-menu-child-item position-static">
-                                <a href="/">Home </a>
+                            <li class="has-menu-child-item">
+                                <a href="/">হোম</a>
                             </li>
 
-                            <li class="with-megamenu has-menu-child-item">
-                                <a href="{{ route('course') }}">Courses </a>
+                            <li class="has-menu-child-item">
+                                <a href="{{ route('course') }}">আমাদের কোর্স সমূহ</a>
                             </li>
 
-                            <li class="has-dropdown has-menu-child-item">
-                                <a href="{{ route('all.courses') }}">Examination
-                                    {{-- <i class="feather-chevron-down"></i> --}}
-                                </a>
+                            <li class="has-menu-child-item">
+                                <a href="{{ route('all.courses') }}">পরীক্ষা সমূহ</a>
+                            </li>
+
+                            <li class="has-menu-child-item">
+                                <a href="{{ route('user.books') }}">স্পার্ক একাডেমির বই</a>
                             </li>
 
                             <li class="has-menu-child-item">
                                 <a href="{{ route('practice_quiz.index') }}">
-                                    Quiz Preparation <span class="badge bg-warning text-dark ms-1" style="font-size: 10px; border-radius: 12px; padding: 2px 7px; font-weight: 800;">GAME</span>
+                                    MCQ Game <span class="badge bg-warning text-dark ms-1" style="font-size: 10px; border-radius: 12px; padding: 2px 7px; font-weight: 800;">LIVE</span>
                                 </a>
                             </li>
                                 {{-- <ul class="submenu">
@@ -191,18 +193,8 @@
 
                                 </ul> --}}
 
-                            <li class="with-megamenu has-menu-child-item position-static">
-                                <a href="{{ route('shop') }}">Shop </a>
-
-                            </li>
-
-                            <!--<li class="with-megamenu has-menu-child-item position-static">-->
-                            <!--    <a href="#">Admission Program</a>-->
-                            <!--</li>-->
-
-                            <li class="with-megamenu has-menu-child-item position-static">
-                                <a href="{{ route('user.about_us') }}">About Us </a>
-
+                            <li class="has-menu-child-item">
+                                <a href="{{ route('user.about_us') }}">আমাদের সম্পর্কে</a>
                             </li>
                         </ul>
                     </nav>
@@ -526,7 +518,7 @@
             <div class="content">
                 <div class="logo">
                     <a href="/">
-                        <img src="{{ asset(optional($company_info)->logo) }}" alt="{{ optional($company_info)->company_name ?? 'Logo' }}" style="max-height: 48px; width: auto; object-fit: contain;">
+                        <img src="{{ asset(optional($company_info)->logo) }}" class="spark-header-logo" alt="{{ optional($company_info)->company_name ?? 'Logo' }}" style="max-height: 48px; width: auto; object-fit: contain; border-radius: 12px;">
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-2">
@@ -566,19 +558,21 @@
 
         <nav class="mainmenu-nav">
             <ul class="mainmenu">
-                <li class=" position-static">
-                    <a href="/">Home </a>
-
+                <li class="position-static">
+                    <a href="/">হোম</a>
                 </li>
 
                 <li class="">
-                    <a href="{{ route('course') }}">Courses </a>
+                    <a href="{{ route('course') }}">আমাদের কোর্স সমূহ</a>
                 </li>
                 <li class="">
-                    <a href="{{ route('all.courses') }}">Examination </a>
+                    <a href="{{ route('all.courses') }}">পরীক্ষা সমূহ</a>
                 </li>
                 <li class="">
-                    <a href="{{ route('practice_quiz.index') }}">Quiz Preparation <span class="badge bg-warning text-dark ms-1" style="font-size: 10px; border-radius: 10px; padding: 2px 6px;">GAME</span></a>
+                    <a href="{{ route('user.books') }}">স্পার্ক একাডেমির বই</a>
+                </li>
+                <li class="">
+                    <a href="{{ route('practice_quiz.index') }}">MCQ Game <span class="badge bg-warning text-dark ms-1" style="font-size: 10px; border-radius: 10px; padding: 2px 6px;">GAME</span></a>
                 </li>
                 {{-- <li class="has-dropdown has-menu-child-item">
                     <a href="{{ route('all.courses') }}" class="">Examination
@@ -623,7 +617,7 @@
                 </li> --}}
 
                 <li class=" position-static">
-                    <a href="{{ route('user.about_us') }}">About Us </a>
+                    <a href="{{ route('user.about_us') }}">আমাদের সম্পর্কে</a>
 
                 </li>
             </ul>
