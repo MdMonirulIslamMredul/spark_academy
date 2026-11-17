@@ -730,10 +730,10 @@
                             </span>
                             <div class="d-flex align-items-center gap-2 ms-1">
                                 <span class="small font-weight-bold" style="color: #64748b;" id="questionRepetitionText">
-                                    Streak: 0/{{ $session->quiz->target_repetitions }}
+                                    Streak: 0/{{ $session->effective_target_repetitions }}
                                 </span>
                                 <div class="repetition-pills" id="repetitionPillsContainer">
-                                    @for($i = 0; $i < $session->quiz->target_repetitions; $i++)
+                                    @for($i = 0; $i < $session->effective_target_repetitions; $i++)
                                         <span class="repetition-dot" id="repDot-{{ $i }}"></span>
                                     @endfor
                                 </div>
@@ -785,10 +785,13 @@
                     <!-- Victory / Completion State -->
                     <div id="victoryState" class="victory-card" style="display: none;">
                         <div class="victory-trophy">🏆</div>
-                        <h2 class="font-weight-bold text-dark-title mb-2">Quiz 100% Mastered!</h2>
-                        <p class="text-muted mb-4" style="max-width: 500px; margin-inline: auto;">
-                            Outstanding achievement! You have successfully mastered every single question in <strong>{{ $session->quiz->title }}</strong>.
+                        <h2 class="font-weight-bold text-dark-title mb-2" id="victoryHeading">Quiz 100% Mastered!</h2>
+                        <p class="text-muted mb-4" style="max-width: 500px; margin-inline: auto;" id="victorySubtitle">
+                            Outstanding achievement! You have successfully mastered every single question in <strong>{{ $session->display_title }}</strong>.
                         </p>
+
+                        <!-- Dynamic Next Step CTA (Next Level / Take Exam / Chapter Completed) -->
+                        <div id="chapterNextActionContainer" class="mb-4"></div>
 
                         <!-- Stats Grid -->
                         <div class="row g-3 justify-content-center mb-5">
@@ -873,7 +876,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let sessionId = {{ $session->id }};
-    const targetRepetitions = {{ $session->quiz->target_repetitions }};
+    const targetRepetitions = {{ $session->effective_target_repetitions }};
     const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '{{ csrf_token() }}';
 
     let currentQuestion = null;
@@ -1006,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loadingState.style.display = 'none';
 
             if (data.session_completed) {
-                showVictoryScreen(data.stats);
+                showVictoryScreen(data.stats, data.chapter_context);
                 return;
             }
 
@@ -1266,7 +1269,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Show Victory Screen
-    function showVictoryScreen(stats) {
+    function showVictoryScreen(stats, chapterContext = null) {
         canPressContinue = false;
         questionState.style.display = 'none';
         loadingState.style.display = 'none';
@@ -1284,6 +1287,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (practiceMistakesBtn) practiceMistakesBtn.style.display = 'inline-flex';
             } else {
                 if (practiceMistakesBtn) practiceMistakesBtn.style.display = 'none';
+            }
+        }
+
+        const chapterNextActionContainer = document.getElementById('chapterNextActionContainer');
+        if (chapterNextActionContainer) {
+            chapterNextActionContainer.innerHTML = '';
+            if (chapterContext) {
+                if (chapterContext.chapter_completed) {
+                    const heading = document.getElementById('victoryHeading');
+                    const subtitle = document.getElementById('victorySubtitle');
+                    if (heading) heading.textContent = 'অধ্যায় ১০০% সম্পন্ন!';
+                    if (subtitle) subtitle.innerHTML = `অভিনন্দন! আপনি <strong>${chapterContext.chapter_title || 'এই অধ্যায়ের'}</strong> সবগুলো ধাপ সফলভাবে সম্পন্ন করেছেন।`;
+
+                    chapterNextActionContainer.innerHTML = `
+                        <div class="p-4 rounded-4 text-center mb-4" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff;">
+                            <h4 class="font-weight-bold mb-2 text-white">🎉 অধ্যায় সম্পন্ন হয়েছে!</h4>
+                            <p class="small text-white-50 mb-3">ভুলের ওপর বিশেষ গেম সফলভাবে শেষ করার মাধ্যমে অধ্যায়টি সমাপ্ত হয়েছে।</p>
+                            <a href="${chapterContext.roadmap_url || '/practice-quizzes'}" class="btn btn-light rounded-pill px-4 py-2 font-weight-bold text-dark shadow-sm">
+                                <i class="feather-map me-1"></i> অধ্যায় রোডম্যাপে ফিরে যান
+                            </a>
+                        </div>
+                    `;
+                } else if (chapterContext.next_level) {
+                    chapterNextActionContainer.innerHTML = `
+                        <div class="p-3 rounded-4 text-center mb-4" style="background: rgba(3, 198, 187, 0.12); border: 2px solid #03c6bb;">
+                            <h5 class="font-weight-bold mb-2 text-dark-title">পরবর্তী ধাপ প্রস্তুত!</h5>
+                            <p class="small text-muted mb-3">লেভেল সফলভাবে সম্পন্ন হয়েছে। পরবর্তী লেভেল খেলতে ক্লিক করুন:</p>
+                            <a href="${chapterContext.next_level.url}" class="btn btn-primary rounded-pill px-4 py-2 font-weight-bold shadow-sm" style="background: linear-gradient(90deg, #03c6bb, #4f46e5);">
+                                <span>Continue to Level ${chapterContext.next_level.sort_order}</span> <i class="feather-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    `;
+                } else if (chapterContext.all_levels_completed) {
+                    chapterNextActionContainer.innerHTML = `
+                        <div class="p-3 rounded-4 text-center mb-4" style="background: rgba(79, 70, 229, 0.12); border: 2px solid #4f46e5;">
+                            <h5 class="font-weight-bold mb-2 text-dark-title">সবগুলো লেভেল শেষ হয়েছে!</h5>
+                            <p class="small text-muted mb-3">এখন আপনি এই অধ্যায়ের সমন্বিত পরীক্ষা দিতে প্রস্তুত।</p>
+                            <a href="${chapterContext.exam_url}" class="btn btn-primary rounded-pill px-4 py-2 font-weight-bold shadow-sm" style="background: linear-gradient(90deg, #4f46e5, #06b6d4);">
+                                <i class="feather-award me-1"></i> <span>Start Chapter Exam</span>
+                            </a>
+                        </div>
+                    `;
+                }
             }
         }
 

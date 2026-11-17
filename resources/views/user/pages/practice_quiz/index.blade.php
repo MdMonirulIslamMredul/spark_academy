@@ -257,7 +257,7 @@
                         </div>
                         <div>
                             <div style="font-size: 13px; color: #94a3b8;">How It Works</div>
-                            <div style="font-weight: 700; color: #ffffff; font-size: 15px;">Answer 4x Correct to Master</div>
+                            <div style="font-weight: 700; color: #ffffff; font-size: 15px;">Answer 3x in a Row to Master</div>
                         </div>
                     </div>
                 </div>
@@ -297,6 +297,96 @@
                 </form>
             </div>
         </div>
+
+        @if(isset($subjects) && $subjects->isNotEmpty())
+        <!-- Subjects & Chapters Section -->
+        <div class="mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h3 class="text-dark-title mb-1" style="font-weight: 800; font-size: 24px;">
+                        <i class="feather-book-open text-primary me-2"></i> বিষয় ও অধ্যায়ভিত্তিক প্রস্তুতি (Subject Roadmaps)
+                    </h3>
+                    <p class="text-dark-muted mb-0 small">লেভেলভিত্তিক গেম খেলে শিখুন, অধ্যায়ভিত্তিক পরীক্ষা দিন এবং ভুলের ওপর বিশেষ গেম খেলে অধ্যায় শেষ করুন।</p>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
+                @foreach($subjects as $subject)
+                    <div class="col-lg-6 col-12">
+                        <div class="practice-card p-4" style="border-left: 5px solid #03c6bb !important;">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge rounded-pill mb-1" style="background: rgba(3, 198, 187, 0.12); color: #009e95; font-weight: 700; font-size: 12px; padding: 4px 12px;">
+                                        {{ $subject->category ? ($subject->category->cat_name ?? $subject->category->name) : 'General Subject' }}
+                                    </span>
+                                    <h4 class="text-dark-title mb-1 mt-1" style="font-weight: 700; font-size: 20px;">
+                                        <a href="{{ route('practice_quiz.subject', $subject->slug) }}" class="text-decoration-none text-dark-title">
+                                            {{ $subject->title }}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <span class="badge bg-light text-dark font-weight-bold" style="font-size: 13px;">
+                                    {{ $subject->activeChapters->count() }} Chapters
+                                </span>
+                            </div>
+
+                            @if($subject->description)
+                                <p class="text-dark-muted small mb-3" style="line-height: 1.5;">
+                                    {{ Str::limit($subject->description, 110) }}
+                                </p>
+                            @endif
+
+                            @if(isset($subject->total_chapters) && $subject->total_chapters > 0)
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small font-weight-bold" style="font-size: 12px; color: #03c6bb;">
+                                            <i class="feather-check-circle me-1"></i> {{ $subject->completed_chapters }} of {{ $subject->total_chapters }} Chapters Mastered
+                                        </span>
+                                        <span class="small font-weight-bold text-dark-title" style="font-size: 12px;">
+                                            {{ $subject->progress_percent }}%
+                                        </span>
+                                    </div>
+                                    <div class="practice-progress-bar">
+                                        <div class="practice-progress-fill" style="width: {{ $subject->progress_percent }}%;"></div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Chapter preview pills -->
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                @foreach($subject->activeChapters->take(4) as $ch)
+                                    <a href="{{ route('practice_quiz.chapter', $ch->slug) }}" class="btn btn-sm btn-outline-light text-dark rounded-pill py-1 px-3" style="font-size: 12px; border-color: #e2e8f0; background: #f8fafc;">
+                                        <i class="feather-folder me-1 text-primary"></i> {{ Str::limit($ch->title, 25) }}
+                                    </a>
+                                @endforeach
+                                @if($subject->activeChapters->count() > 4)
+                                    <span class="small text-muted align-self-center">+{{ $subject->activeChapters->count() - 4 }} more</span>
+                                @endif
+                            </div>
+
+                            <div class="mt-auto">
+                                <a href="{{ route('practice_quiz.subject', $subject->slug) }}" class="btn btn-practice-start rounded-pill w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+                                    <span>Explore Subject Chapters</span>
+                                    <i class="feather-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        @if($quizzes->isNotEmpty())
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h4 class="text-dark-title mb-1" style="font-weight: 700; font-size: 20px;">
+                    <i class="feather-zap text-warning me-2"></i> All Practice & Preparation Quizzes
+                </h4>
+                <p class="text-dark-muted mb-0 small">Standalone quizzes & rapid recall exercises.</p>
+            </div>
+        </div>
+        @endif
 
         <!-- Quizzes Grid -->
         <div class="row g-4">
