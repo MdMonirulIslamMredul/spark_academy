@@ -16,6 +16,11 @@ class PracticeQuiz extends Model
         return $this->belongsTo(categories::class, 'category_id');
     }
 
+    public function chapter()
+    {
+        return $this->belongsTo(PracticeChapter::class, 'chapter_id');
+    }
+
     public function questions()
     {
         return $this->hasMany(PracticeQuestion::class, 'practice_quiz_id');
