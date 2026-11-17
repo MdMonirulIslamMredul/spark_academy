@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class ProductionClientDataSeeder extends Seeder
@@ -23,6 +24,7 @@ class ProductionClientDataSeeder extends Seeder
             'written_questions',
             'course_categories',
             'courses',
+            'course_chapters',
             'course_modules',
             'teachers',
             'blogs',
@@ -42,7 +44,9 @@ class ProductionClientDataSeeder extends Seeder
         ];
 
         foreach ($tablesToTruncate as $t) {
-            DB::table($t)->truncate();
+            if (Schema::hasTable($t)) {
+                DB::table($t)->truncate();
+            }
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -95,26 +99,26 @@ class ProductionClientDataSeeder extends Seeder
 
         // 4. Populate Company Settings
         DB::table('company_settings')->insert([
-            'company_name' => 'পাঠজল্পনা - বিসিএস ও সরকারি চাকরি প্রস্তুতি',
+            'company_name' => 'Spark Academy - Emu Sir',
             'logo' => 'frontend/assets/images/logo/logo.png',
-            'address' => 'হাউস ৪২, রোড ১১, ধানমন্ডি, ঢাকা-১২০৯',
-            'phone_1' => '+880 1712-345678',
-            'phone_2' => '+880 1912-345678',
-            'email' => 'support@pathjolpona.com',
+            'address' => 'মডুলাস, চট্টেশ্বরী রোড, চকবাজার, চট্টগ্রাম',
+            'phone_1' => '01768240303',
+            'phone_2' => '01521328888',
+            'email' => 'learnwithemu@gmail.com',
             'count1' => 25000,
             'count2' => 450,
             'count3' => 85,
             'count4' => 98,
-            'facebook' => 'https://facebook.com/pathjolpona',
-            'youtube' => 'https://youtube.com/@pathjolpona',
-            'instagram' => 'https://instagram.com/pathjolpona',
-            'twitter' => 'https://twitter.com/pathjolpona',
-            'linkden' => 'https://linkedin.com/company/pathjolpona',
-            'privacy_policy' => '<p>পাঠজল্পনা শিক্ষার্থীদের ব্যক্তিগত তথ্যের সর্বোচ্চ সুরক্ষা ও গোপনীয়তা বজায় রাখতে প্রতিশ্রুতিবদ্ধ। শিক্ষার্থীদের প্রোফাইল, ফোন নম্বর এবং পরীক্ষার ফলাফল সম্পূর্ণ এনক্রিপ্টেড ডাটাবেজে সংরক্ষিত থাকে এবং কোনো তৃতীয় পক্ষের কাছে বিক্রি বা শেয়ার করা হয় না।</p>',
-            'mission_and_vission' => '<p><strong>আমাদের লক্ষ্য:</strong> বাংলাদেশের প্রতিটি প্রান্তের চাকরিপ্রত্যাশী শিক্ষার্থীদের কাছে নামমাত্র মূল্যে সেরা বিসিএস ও সরকারি চাকরির প্রস্তুতি পৌঁছে দেওয়া।<br><br><strong>আমাদের ভিশন:</strong> আধুনিক প্রযুক্তিনির্ভর লাইভ মডেল টেস্ট, তাৎক্ষণিক র‍্যাংকিং ও বিষয়ভিত্তিক বিশ্লেষণের মাধ্যমে দেশের শীর্ষস্থানীয় এডটেক প্ল্যাটফর্মে রূপান্তরিত হওয়া।</p>',
-            'trams_and_condition' => '<p>১. পাঠজল্পনা প্ল্যাটফর্মের সকল মডেল টেস্ট, প্রশ্নব্যাংক ও লেকচার নোটের কপিরাইট সংরক্ষিত।<br>২. একটি শিক্ষার্থী অ্যাকাউন্ট কেবল একজন শিক্ষার্থীই ব্যবহার করতে পারবেন।<br>৩. পরীক্ষায় অসদুপায় অবলম্বন বা সার্ভারে স্প্যামিং নিষিদ্ধ।</p>',
-            'footer_des' => 'পাঠজল্পনা বাংলাদেশের শীর্ষস্থানীয় অনলাইন পরীক্ষা ও ক্যারিয়ার প্ল্যাটফর্ম। বিসিএস, ব্যাংক, প্রাথমিক শিক্ষক নিয়োগ ও সকল সরকারি চাকরির জন্য সম্পূর্ণ ডিজিটাল প্রস্তুতি।',
-            'footer_credit' => '© ২০২৬ পাঠজল্পনা এডুকেশন লিমিটেড। সর্বস্বত্ব সংরক্ষিত।',
+            'facebook' => 'https://facebook.com/sparkacademyofficial',
+            'youtube' => 'https://youtube.com/@sparkacademyofficial',
+            'instagram' => 'https://instagram.com/sparkacademyofficial',
+            'twitter' => 'https://twitter.com/sparkacademyofficial',
+            'linkden' => 'https://linkedin.com/company/sparkacademyofficial',
+            'privacy_policy' => '<p>স্পার্ক একাডেমি শিক্ষার্থীদের ব্যক্তিগত তথ্যের সর্বোচ্চ সুরক্ষা ও গোপনীয়তা বজায় রাখতে প্রতিশ্রুতিবদ্ধ। শিক্ষার্থীদের প্রোফাইল, ফোন নম্বর এবং পরীক্ষার ফলাফল সম্পূর্ণ এনক্রিপ্টেড ডাটাবেজে সংরক্ষিত থাকে এবং কোনো তৃতীয় পক্ষের কাছে বিক্রি বা শেয়ার করা হয় না।</p>',
+            'mission_and_vission' => '<p><strong>আমাদের লক্ষ্য:</strong> এইচএসসি বিজ্ঞান বিভাগের শিক্ষার্থীদের পদার্থবিজ্ঞানের ভিত্তি মজবুত করা এবং বোর্ড ও ভর্তি পরীক্ষায় সর্বোচ্চ সাফল্য অর্জন করানো।</p>',
+            'trams_and_condition' => '<p>১. স্পার্ক একাডেমি প্ল্যাটফর্মের সকল কোর্স, ভিডিও লেকচার, বই ও ম্যাটেরিয়ালের কপিরাইট সংরক্ষিত।</p>',
+            'footer_des' => 'স্পার্ক একাডেমি ইমু স্যার এইচএসসি বিজ্ঞান বিভাগের শিক্ষার্থীদের জন্য একটি অনলাইন ও অফলাইন কার্যক্রম সম্পন্নকারী প্রতিষ্ঠান। স্পার্ক একাডেমির অনলাইন কোর্সের পাশাপাশি আছে নিজস্ব বই ।',
+            'footer_credit' => '© ২০২৬ Spark Academy - Emu Sir. সর্বস্বত্ব সংরক্ষিত।',
             'created_at' => $now,
             'updated_at' => $now
         ]);
@@ -123,8 +127,8 @@ class ProductionClientDataSeeder extends Seeder
         $categoriesData = [
             [
                 'id' => 1,
-                'name' => '৪৬তম ও ৪৭তম বিসিএস প্রিলিমিনারি প্রস্তুতি',
-                'url' => 'bcs-preliminary-preparation',
+                'name' => 'HSC পদার্থবিজ্ঞান ১ম ও ২য় পত্র মডেল টেস্ট',
+                'url' => 'hsc-physics-model-tests',
                 'image' => 'images/bcs_prep.jpg',
                 'free_paid' => 'free',
                 'tk' => '0',
@@ -135,11 +139,11 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'name' => 'সমন্বিত ১০ ব্যাংক সিনিয়র অফিসার ও অফিসার',
-                'url' => 'combined-bank-officer-preparation',
+                'name' => 'HSC রসায়ন ১ম ও ২য় পত্র মডেল টেস্ট',
+                'url' => 'hsc-chemistry-model-tests',
                 'image' => 'images/bank_prep.jpg',
-                'free_paid' => 'paid',
-                'tk' => '500',
+                'free_paid' => 'free',
+                'tk' => '0',
                 'rank' => 2,
                 'active' => 1,
                 'created_at' => $now,
@@ -147,8 +151,8 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'name' => 'প্রাথমিক সহকারী শিক্ষক নিয়োগ পরীক্ষা',
-                'url' => 'primary-assistant-teacher-recruitment',
+                'name' => 'HSC উচ্চতর গণিত ১ম ও ২য় পত্র মডেল টেস্ট',
+                'url' => 'hsc-higher-math-model-tests',
                 'image' => 'images/primary_prep.jpg',
                 'free_paid' => 'free',
                 'tk' => '0',
@@ -159,11 +163,11 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'name' => '১৮তম শিক্ষক নিবন্ধন (NTRCA) স্কুল ও কলেজ',
-                'url' => 'ntrca-teacher-registration-exam',
+                'name' => 'HSC জীববিজ্ঞান ১ম ও ২য় পত্র মডেল টেস্ট',
+                'url' => 'hsc-biology-model-tests',
                 'image' => 'images/ntrca_prep.jpg',
-                'free_paid' => 'paid',
-                'tk' => '450',
+                'free_paid' => 'free',
+                'tk' => '0',
                 'rank' => 4,
                 'active' => 1,
                 'created_at' => $now,
@@ -171,8 +175,8 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'name' => 'বাংলাদেশ রেলওয়ে ও সরকারি নন-ক্যাডার নিয়োগ',
-                'url' => 'railway-and-govt-non-cadre-jobs',
+                'name' => 'HSC আইসিটি ও স্পেশাল বোর্ড ফাইনাল টেস্ট',
+                'url' => 'hsc-ict-board-final-tests',
                 'image' => 'images/govt_job_prep.jpg',
                 'free_paid' => 'free',
                 'tk' => '0',
@@ -543,8 +547,8 @@ class ProductionClientDataSeeder extends Seeder
         $courseCategories = [
             [
                 'id' => 1,
-                'name' => 'বিসিএস প্রিলিমিনারি ও লিখিত স্পেশাল ব্যাচ',
-                'url' => 'bcs-comprehensive-master-course',
+                'name' => 'HSC পদার্থবিজ্ঞান (Physics)',
+                'url' => 'hsc-physics',
                 'image' => 'images/bcs_prep.jpg',
                 'rank' => 1,
                 'active' => 1,
@@ -553,8 +557,8 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'name' => 'সমন্বিত ব্যাংক অফিসার ক্যারিয়ার প্রোগ্রাম',
-                'url' => 'combined-bank-recruitment-course',
+                'name' => 'HSC রসায়ন (Chemistry)',
+                'url' => 'hsc-chemistry',
                 'image' => 'images/bank_prep.jpg',
                 'rank' => 2,
                 'active' => 1,
@@ -563,8 +567,8 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'name' => 'প্রাথমিক সহকারী শিক্ষক চূড়ান্ত ক্র্যাশ কোর্স',
-                'url' => 'primary-teacher-crash-course',
+                'name' => 'HSC উচ্চতর গণিত (Higher Math)',
+                'url' => 'hsc-higher-math',
                 'image' => 'images/primary_prep.jpg',
                 'rank' => 3,
                 'active' => 1,
@@ -573,8 +577,8 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'name' => '১৮তম শিক্ষক নিবন্ধন (NTRCA) প্রস্তুতি ব্যাচ',
-                'url' => 'ntrca-registration-prep-batch',
+                'name' => 'HSC জীববিজ্ঞান (Biology)',
+                'url' => 'hsc-biology',
                 'image' => 'images/ntrca_prep.jpg',
                 'rank' => 4,
                 'active' => 1,
@@ -583,8 +587,8 @@ class ProductionClientDataSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'name' => 'মন্ত্রণালয় ও সরকারি নন-ক্যাডার ফাউন্ডেশন কোর্স',
-                'url' => 'ministry-and-non-cadre-course',
+                'name' => 'HSC তথ্য ও যোগাযোগ প্রযুক্তি (ICT)',
+                'url' => 'hsc-ict',
                 'image' => 'images/govt_job_prep.jpg',
                 'rank' => 5,
                 'active' => 1,
@@ -599,10 +603,10 @@ class ProductionClientDataSeeder extends Seeder
             [
                 'id' => 1,
                 'catID' => '1',
-                'name' => '৪৬তম ও ৪৭তম বিসিএস কমপ্লিট প্রিলি ও রিটেন মাস্টারকোর্স',
-                'price' => 2500,
+                'name' => 'HSC-28 Physics 1st Paper Basic to Advance Course',
+                'price' => 3000,
                 'image' => 'images/bcs_prep.jpg',
-                'description' => '১০টি বিষয়ের সম্পূর্ণ সিলেবাস কাভারেজ, ১২০+ লাইভ ক্লাস, ৫০টি বিষয়ভিত্তিক ও পূর্ণাঙ্গ মডেল টেস্ট, লেকচার শিট এবং ক্যাডার মেন্টরদের নিয়মিত গাইডলাইন।',
+                'description' => '<p>ইমু স্যারের নির্দেশনায় এইচএসসি-২৮ ব্যাচের বিজ্ঞান বিভাগের শিক্ষার্থীদের জন্য পদার্থবিজ্ঞান ১ম পত্রের বেসিক টু অ্যাডভান্স পূর্ণাঙ্গ কোর্স। থিওরি ক্লিয়ারেন্স, শর্টকাট টেকনিক, গাণিতিক সমস্যা ও বোর্ড পরীক্ষার সেরা প্রস্তুতি।</p>',
                 'rank' => 1,
                 'active' => 1,
                 'created_at' => $now,
@@ -659,61 +663,152 @@ class ProductionClientDataSeeder extends Seeder
         ];
         DB::table('courses')->insert($coursesData);
 
-        // 11. Populate Course Modules (`course_modules`)
+        // 11. Populate Course Chapters (`course_chapters`) & Videos (`course_modules`)
+        $courseChapters = [
+            ['id' => 1, 'course_id' => 1, 'title' => 'ভৌতজগত ও পরিমাপ (Physical World & Measurement)', 'description' => 'মৌলিক ও লব্ধ রাশি, মাত্রা, ত্রুটি বিশ্লেষণ এবং সূক্ষ্ম পরিমাপ যন্ত্রপাতি।', 'sort_order' => 1, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'course_id' => 1, 'title' => 'ভেক্টর (Vector)', 'description' => 'ভেক্টর ও স্কেলার রাশি, একক ভেক্টর এবং ভেক্টর বিভাজন।', 'sort_order' => 2, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 3, 'course_id' => 1, 'title' => 'গতিবিদ্যা (Dynamics)', 'description' => 'রৈখিক গতি, ত্বরণ, প্রাস ও গতির সমীকরণ।', 'sort_order' => 3, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 4, 'course_id' => 1, 'title' => 'নিউটনিয়ান বলবিদ্যা (Newtonian Mechanics)', 'description' => 'জড়তা, ভরবেগ সংরক্ষণ, ঘর্ষণ ও রকেট গতি।', 'sort_order' => 4, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 5, 'course_id' => 1, 'title' => 'কাজ, শক্তি ও ক্ষমতা (Work, Energy & Power)', 'description' => 'গতিশক্তি, বিভবশক্তি, সংরক্ষণশীলতা নীতি ও কুয়া সংক্রান্ত গাণিতিক সমস্যা।', 'sort_order' => 5, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 6, 'course_id' => 1, 'title' => 'মহাকর্ষ ও অভিকর্ষ (Gravitation & Gravity)', 'description' => 'মহাকর্ষ সূত্র, কেপলারের সূত্র, মুক্তিবেগ ও কৃত্রিম উপগ্রহ।', 'sort_order' => 6, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 7, 'course_id' => 1, 'title' => 'পদার্থের গাঠনিক ধর্ম (Structural Properties of Matter)', 'description' => 'স্থিতিস্থাপকতা, হুকের সূত্র, ইয়ং-এর গুণাঙ্ক ও পৃষ্ঠটান।', 'sort_order' => 7, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 8, 'course_id' => 1, 'title' => 'পর্যায়বৃত্ত গতি (Periodic Motion)', 'description' => 'সরল ছন্দিত স্পন্দন, স্প্রিং-ভর সিস্টেম ও সরল দোলক।', 'sort_order' => 8, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 9, 'course_id' => 1, 'title' => 'তরঙ্গ (Waves)', 'description' => 'অগ্রগামী ও স্থির তরঙ্গ, শব্দের বেগ, বিট ও ডপলার ক্রিয়া।', 'sort_order' => 9, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 10, 'course_id' => 1, 'title' => 'আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব (Ideal Gas & Kinetics)', 'description' => 'বয়েল ও চার্লসের সূত্র, আদর্শ গ্যাস সমীকরণ ও আর্দ্রতামিতি।', 'sort_order' => 10, 'created_at' => $now, 'updated_at' => $now],
+        ];
+        DB::table('course_chapters')->insert($courseChapters);
+
         $courseModules = [
+            // Course 1: HSC-28 Physics 1st Paper Basic to Advance Course (10 Chapters)
             [
                 'course_id' => 1,
-                'title' => 'লেকচার ০১: বাংলা ভাষা ও সাহিত্যের প্রাচীন ও মধ্যযুগ (চর্যাপদ ও মঙ্গলকাব্য)',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
+                'chapter_id' => 1,
+                'title' => 'লেকচার ০১: ভৌতজগত ও পরিমাপ - মৌলিক ও লব্ধ রাশি, মাত্রা ও ত্রুটি বিশ্লেষণ',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '28 min',
                 'free_paid' => 'free',
+                'sort_order' => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
                 'course_id' => 1,
-                'title' => 'লেকচার ০২: বাংলা ব্যাকরণ - ধ্বনিতত্ত্ব, ন-ত্ব ও ষ-ত্ব বিধান এবং সন্ধি',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
+                'chapter_id' => 1,
+                'title' => 'লেকচার ০২: স্লাইড ক্যালিপার্স ও স্ক্রু-গেজ দিয়ে সূক্ষ্ম পরিমাপ ও গাণিতিক উদাহরণ',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '34 min',
                 'free_paid' => 'free',
+                'sort_order' => 2,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
                 'course_id' => 1,
-                'title' => 'লেকচার ০৩: English Literature - Elizabethan & Romantic Period Masterclass',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
+                'chapter_id' => 1,
+                'title' => 'লেকচার ০৩: ভৌতজগত ও পরিমাপ - বিগত বছরের বোর্ড ও ভর্তি পরীক্ষার MCQ সমাধান',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '42 min',
+                'free_paid' => 'free',
+                'sort_order' => 3,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'course_id' => 1,
+                'chapter_id' => 2,
+                'title' => 'লেকচার ০১: ভেক্টর ও স্কেলার রাশি, একক ভেক্টর ও অবস্থান ভেক্টর',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '36 min',
                 'free_paid' => 'paid',
+                'sort_order' => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
                 'course_id' => 1,
-                'title' => 'লেকচার ০৪: সাধারণ গণিত - শতকরা, অনুপাত ও লাভ-ক্ষতির স্পেশাল শর্টকাট',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
+                'chapter_id' => 3,
+                'title' => 'লেকচার ০১: গতিবিদ্যা - রৈখিক গতি, ত্বরণ ও গতির সমীকরণ',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '40 min',
                 'free_paid' => 'paid',
+                'sort_order' => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'course_id' => 2,
-                'title' => 'Module 01: Banking Mathematics - Speed Math & Percentage Word Problems',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
-                'free_paid' => 'free',
-                'created_at' => $now,
-                'updated_at' => $now
-            ],
-            [
-                'course_id' => 2,
-                'title' => 'Module 02: Analytical Reasoning & Critical Thinking Puzzle Mastery',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
+                'course_id' => 1,
+                'chapter_id' => 4,
+                'title' => 'লেকচার ০১: নিউটনিয়ান বলবিদ্যা - জড়তা, ভরবেগ সংরক্ষণ ও রকেট গতি',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '45 min',
                 'free_paid' => 'paid',
+                'sort_order' => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'course_id' => 3,
-                'title' => 'লেকচার ০১: প্রাথমিক শিক্ষক নিয়োগ - বিগত বছরের প্রশ্ন বিশ্লেষণ ও প্রস্তুতি গাইড',
-                'link' => 'https://www.youtube.com/embed/ScMzIvxBSi4',
-                'free_paid' => 'free',
+                'course_id' => 1,
+                'chapter_id' => 5,
+                'title' => 'লেকচার ০১: কাজ, শক্তি ও ক্ষমতা - গতিশক্তি, বিভবশক্তি ও কুয়া সংক্রান্ত সমস্যা',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '38 min',
+                'free_paid' => 'paid',
+                'sort_order' => 1,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'course_id' => 1,
+                'chapter_id' => 6,
+                'title' => 'লেকচার ০১: মহাকর্ষ ও অভিকর্ষ - মহাকর্ষ সূত্র, কেপলারের সূত্র ও অভিকর্ষজ ত্বরণ',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '35 min',
+                'free_paid' => 'paid',
+                'sort_order' => 1,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'course_id' => 1,
+                'chapter_id' => 7,
+                'title' => 'লেকচার ০১: পদার্থের গাঠনিক ধর্ম - স্থিতিস্থাপকতা, হুকের সূত্র ও ইয়ং-এর গুণাঙ্ক',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '32 min',
+                'free_paid' => 'paid',
+                'sort_order' => 1,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'course_id' => 1,
+                'chapter_id' => 8,
+                'title' => 'লেকচার ০১: পর্যায়বৃত্ত গতি - সরল ছন্দিত স্পন্দন ও সরল দোলক',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '37 min',
+                'free_paid' => 'paid',
+                'sort_order' => 1,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'course_id' => 1,
+                'chapter_id' => 9,
+                'title' => 'লেকচার ০১: তরঙ্গ - অগ্রগামী ও স্থির তরঙ্গ, শব্দের বেগ ও ডপলার ক্রিয়া',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '41 min',
+                'free_paid' => 'paid',
+                'sort_order' => 1,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'course_id' => 1,
+                'chapter_id' => 10,
+                'title' => 'লেকচার ০১: আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব - বয়েলের সূত্র, চার্লসের সূত্র ও আদর্শ গ্যাস সমীকরণ',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'duration' => '39 min',
+                'free_paid' => 'paid',
+                'sort_order' => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ]
