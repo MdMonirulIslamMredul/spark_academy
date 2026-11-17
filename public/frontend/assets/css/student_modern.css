@@ -1,24 +1,30 @@
 /* ==========================================================================
-   UDDOKTA COURSE - MODERN STUDENT-CENTRIC EDTECH DESIGN SYSTEM
-   Palette: Teal (#03c6bb), Deep Slate (#0f172a), Indigo (#4f46e5)
+   SPARK ACADEMY - MODERN STUDENT-CENTRIC EDTECH DESIGN SYSTEM
+   Palette: Spark Orange (#ff7a00), Deep Midnight Navy (#071126), Crisp White (#ffffff)
+   Font: Hind Siliguri (Bengali) + Outfit / Inter
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary: #03c6bb;
-    --primary-dark: #009e95;
-    --primary-light: #e6faf8;
-    --primary-gradient: linear-gradient(135deg, #03c6bb 0%, #009e95 100%);
+    --primary: #ff7a00;
+    --primary-dark: #e05e00;
+    --primary-light: #fff7ed;
+    --primary-gradient: linear-gradient(135deg, #ff7a00 0%, #ea580c 100%);
+    
+    --navy-deep: #071126;
+    --navy-card: #0d1e3d;
+    --navy-light: #162a52;
+    --navy-gradient: linear-gradient(135deg, #071126 0%, #0d1e3d 100%);
     
     --indigo: #4f46e5;
     --indigo-light: #eef2ff;
     --indigo-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
     
-    --slate-900: #0f172a;
-    --slate-800: #1e293b;
-    --slate-700: #334155;
-    --slate-600: #475569;
+    --slate-900: #071126;
+    --slate-800: #0d1e3d;
+    --slate-700: #1e293b;
+    --slate-600: #334155;
     --slate-500: #64748b;
     --slate-400: #94a3b8;
     --slate-200: #e2e8f0;
@@ -32,14 +38,15 @@
     --warning: #f59e0b;
     --warning-light: #fffbeb;
     
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Hind Siliguri', 'Outfit', sans-serif;
+    --font-body: 'Hind Siliguri', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-bangla: 'Hind Siliguri', sans-serif;
     
-    --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
-    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
-    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
-    --shadow-hover: 0 20px 30px -10px rgba(3, 198, 187, 0.25);
+    --shadow-sm: 0 1px 2px 0 rgba(7, 17, 38, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(7, 17, 38, 0.08), 0 2px 4px -2px rgba(7, 17, 38, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(7, 17, 38, 0.08), 0 4px 6px -4px rgba(7, 17, 38, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(7, 17, 38, 0.1), 0 8px 10px -6px rgba(7, 17, 38, 0.05);
+    --shadow-hover: 0 20px 30px -10px rgba(255, 122, 0, 0.28);
     
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -50,8 +57,11 @@
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body {
+body, html, h1, h2, h3, h4, h5, h6, p, span, a, input, button, select, textarea {
     font-family: var(--font-body) !important;
+}
+
+body {
     color: var(--slate-700);
     background-color: var(--slate-50);
     -webkit-font-smoothing: antialiased;
@@ -179,9 +189,9 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(3, 198, 187, 0.15);
-    border: 1px solid rgba(3, 198, 187, 0.35);
-    color: #03c6bb;
+    background: rgba(255, 122, 0, 0.15);
+    border: 1px solid rgba(255, 122, 0, 0.35);
+    color: #ff7a00;
     font-size: 13px;
     font-weight: 600;
     padding: 6px 16px;
@@ -202,7 +212,7 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
 }
 
 .student-hero-title span {
-    background: linear-gradient(135deg, #03c6bb 0%, #38bdf8 100%);
+    background: linear-gradient(135deg, #ff7a00 0%, #ffb703 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -610,14 +620,14 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
     width: 140px;
     height: 140px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #03c6bb 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #ff7a00 0%, #ea580c 100%);
     color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: 0 auto 24px;
-    box-shadow: 0 10px 25px rgba(3, 198, 187, 0.35);
+    box-shadow: 0 10px 25px rgba(255, 122, 0, 0.35);
 }
 
 .score-meter-num {
@@ -829,9 +839,9 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
 }
 
 .newsletter .sup-form .form-control.sigmup-me:focus {
-    border-color: #03c6bb !important;
+    border-color: #ff7a00 !important;
     outline: none !important;
-    box-shadow: 0 0 0 4px rgba(3, 198, 187, 0.25) !important;
+    box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.25) !important;
 }
 
 .newsletter .sup-form .btn.btn-theme {
@@ -841,7 +851,7 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
     bottom: 6px !important;
     height: 52px !important;
     border-radius: 50px !important;
-    background: linear-gradient(135deg, #03c6bb 0%, #009e95 100%) !important;
+    background: linear-gradient(135deg, #ff7a00 0%, #ea580c 100%) !important;
     color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 15px !important;
@@ -849,7 +859,7 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 4px 14px rgba(3, 198, 187, 0.35) !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 0, 0.35) !important;
     border: none !important;
     transition: all 0.25s ease !important;
 }
@@ -878,5 +888,123 @@ h1, h2, h3, h4, h5, h6, .title, .rbt-card-title {
 .copyright-area.copyright-style-1 .copyright-link {
     margin-bottom: 0 !important;
 }
+
+/* Universal Bengali Card Button Flex Centering */
+.spark-book-btn-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 20px 24px;
+    width: 100%;
+}
+.spark-book-btn {
+    flex: 1;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    line-height: 1 !important;
+    padding: 0 12px !important;
+    border-radius: 9999px !important;
+    font-family: 'Hind Siliguri', sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-sizing: border-box;
+    margin: 0;
+    cursor: pointer;
+}
+.spark-book-btn span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    letter-spacing: 0.2px;
+}
+.spark-book-btn-read {
+    background: #ffffff !important;
+    border: 1.5px solid #ff7a00 !important;
+    color: #ff7a00 !important;
+}
+.spark-book-btn-read:hover {
+    background: #ff7a00 !important;
+    color: #ffffff !important;
+    border-color: #ff7a00 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 122, 0, 0.3);
+}
+.spark-book-btn-order {
+    background: linear-gradient(135deg, #03c6bb 0%, #6366f1 100%) !important;
+    border: 1.5px solid transparent !important;
+    color: #ffffff !important;
+}
+.spark-book-btn-order:hover {
+    background: linear-gradient(135deg, #02b3a9 0%, #4f46e5 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(3, 198, 187, 0.4);
+}
+
+/* Universal Fix for .rbt-btn to guarantee flexbox vertical and horizontal centering across all pages */
+.rbt-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    line-height: 1 !important;
+}
+.rbt-btn span,
+.rbt-btn .btn-text {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+}
+.rbt-btn i {
+    top: 0 !important;
+    position: static !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* ==========================================================================
+   Header & Footer Logo Rounded Corners
+   ========================================================================== */
+.spark-header-logo,
+.spark-footer-logo,
+.rbt-header .logo_image img,
+.rbt-header .logo img,
+.rbt-header-wrapper .logo_image img,
+.popup-mobile-menu .logo img,
+.nav-header .spark-header-logo,
+.nav-header img,
+.footer-logo-wrap img,
+.img-footer,
+.rbt-footer .footer-widget img {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* ==========================================================================
+   Hide Pageup / Back-to-Top Button
+   ========================================================================== */
+.rbt-progress-parent,
+.rbt-back-circle,
+.back-to-top,
+.progress-wrap {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+
+
 
 

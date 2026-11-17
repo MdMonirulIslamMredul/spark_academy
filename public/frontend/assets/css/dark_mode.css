@@ -119,6 +119,11 @@ html.dark-theme .color-body {
 }
 
 /* Override inline dark text colors rendered from blade templates */
+html.dark-theme [style*="color: #071126"],
+html.dark-theme [style*="color:#071126"],
+html.dark-theme [style*="color: rgb(7, 17, 38)"],
+html.dark-theme [style*="color: #0d1e3d"],
+html.dark-theme [style*="color:#0d1e3d"],
 html.dark-theme [style*="color: #0f172a"],
 html.dark-theme [style*="color: rgb(15, 23, 42)"],
 html.dark-theme [style*="color:#0f172a"],
@@ -282,11 +287,23 @@ html.dark-theme .popup-mobile-menu .navbar-top-left li a {
 html.dark-theme .bg-color-white,
 html.dark-theme .bg-white,
 html.dark-theme .bg-light,
-html.dark-theme .bg-color-extra-light {
+html.dark-theme .bg-color-extra-light,
+html.dark-theme .bg-color-extra2,
+html.dark-theme .spark-hub-section,
+html.dark-theme #about-spark,
+html.dark-theme #reviews-section {
     background-color: var(--bg-canvas) !important;
 }
 
 /* All Card Components */
+html.dark-theme .spark-hub-card,
+html.dark-theme .spark-about-pillar,
+html.dark-theme .spark-expert-card,
+html.dark-theme .spark-review-card,
+html.dark-theme .spark-book-grid-card,
+html.dark-theme .spark-course-card-lg,
+html.dark-theme .spark-book-card,
+html.dark-theme .spark-course-progress-card,
 html.dark-theme .modern-category-card,
 html.dark-theme .modern-cat-grid-card,
 html.dark-theme .modern-exam-card,
@@ -1323,3 +1340,250 @@ html.dark-theme .theme-icon-moon {
     align-items: center;
     margin: 0 4px;
 }
+
+/* ==========================================================================
+   15. SPARK ACADEMY COMPONENT THEME OVERRIDES
+   (Homepage, About Us, Books Catalog & Details, Course & Curriculum, Quizzes)
+   ========================================================================== */
+
+/* Spark Hub & Section Backgrounds */
+html.dark-theme .spark-hub-section,
+html.dark-theme section#about-spark,
+html.dark-theme section#reviews-section,
+html.dark-theme .rbt-course-details-area,
+html.dark-theme div.spark-hub-section {
+    background-color: var(--bg-canvas) !important;
+    background: var(--bg-canvas) !important;
+}
+
+/* Spark Cards - Surface & Contrast */
+html.dark-theme .spark-hub-card,
+html.dark-theme .spark-about-pillar,
+html.dark-theme .spark-expert-card,
+html.dark-theme .spark-review-card,
+html.dark-theme .spark-book-grid-card,
+html.dark-theme .spark-course-card-lg,
+html.dark-theme .spark-book-card,
+html.dark-theme .spark-course-progress-card {
+    background-color: #131f37 !important;
+    background: #131f37 !important;
+    border: 1px solid #243247 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+    color: var(--text-secondary) !important;
+}
+
+html.dark-theme .spark-hub-card:hover,
+html.dark-theme .spark-about-pillar:hover,
+html.dark-theme .spark-book-grid-card:hover,
+html.dark-theme .spark-review-card:hover {
+    border-color: #ff7a00 !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65), 0 0 18px rgba(255, 122, 0, 0.22) !important;
+}
+
+/* Spark Titles & Headings in Dark Mode */
+html.dark-theme .spark-hub-card h4,
+html.dark-theme .spark-about-pillar h5,
+html.dark-theme .spark-expert-card h3,
+html.dark-theme .spark-expert-card h4,
+html.dark-theme .spark-expert-card h5,
+html.dark-theme .spark-review-card h6,
+html.dark-theme .spark-book-grid-card h5,
+html.dark-theme .spark-book-grid-card h5 a,
+html.dark-theme .spark-course-card-lg h2,
+html.dark-theme .spark-book-card h2,
+html.dark-theme .spark-book-card h4,
+html.dark-theme .spark-course-progress-card h4,
+html.dark-theme #about-spark .title,
+html.dark-theme #reviews-section .title {
+    color: #f8fafc !important;
+}
+
+/* Spark Paragraphs & Text */
+html.dark-theme .spark-hub-card p,
+html.dark-theme .spark-about-pillar p,
+html.dark-theme .spark-expert-card p,
+html.dark-theme .spark-review-card p,
+html.dark-theme .spark-course-card-lg p,
+html.dark-theme .spark-book-card p,
+html.dark-theme #about-spark p,
+html.dark-theme #about-spark div,
+html.dark-theme .spark-about-desc-content,
+html.dark-theme .spark-about-desc-content p,
+html.dark-theme .spark-about-desc-content span,
+html.dark-theme #reviews-section p {
+    color: #cbd5e1 !important;
+}
+
+html.dark-theme .spark-hub-card p strong,
+html.dark-theme .spark-about-pillar p strong,
+html.dark-theme .spark-course-card-lg p strong {
+    color: #f8fafc !important;
+}
+
+html.dark-theme .spark-expert-card span,
+html.dark-theme .spark-review-card small,
+html.dark-theme .spark-review-card span {
+    color: #94a3b8 !important;
+}
+
+/* Badges, Pills & Inner Containers */
+html.dark-theme .spark-credential-badge {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+}
+
+html.dark-theme .spark-feature-item {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #f8fafc !important;
+}
+
+html.dark-theme .spark-feature-item span {
+    color: #f8fafc !important;
+}
+
+html.dark-theme .spark-book-thumb {
+    background: #0f172a !important;
+    background-color: #0f172a !important;
+}
+
+html.dark-theme .spark-expert-avatar {
+    background-color: #131f37 !important;
+    border-color: #ff7a00 !important;
+}
+
+html.dark-theme .spark-review-card .border-top,
+html.dark-theme .spark-course-card-lg .border-top,
+html.dark-theme .spark-book-card .border-top,
+html.dark-theme .spark-course-progress-card .border-top {
+    border-color: #243247 !important;
+}
+
+/* Light Badges Inside Cards */
+html.dark-theme .badge.bg-light,
+html.dark-theme .badge.bg-light.text-muted {
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+    border: 1px solid #334155 !important;
+}
+
+/* Spark Action Buttons (Replacing Stark White in Dark Mode) */
+html.dark-theme .spark-btn-books,
+html.dark-theme .spark-card-btn-books,
+html.dark-theme .spark-book-btn-read,
+html.dark-theme .spark-course-btn-trial,
+html.dark-theme .spark-book-info-outline {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #ff7a00 !important;
+    border: 2px solid #ff7a00 !important;
+}
+
+html.dark-theme .spark-btn-books:hover,
+html.dark-theme .spark-card-btn-books:hover,
+html.dark-theme .spark-book-btn-read:hover,
+html.dark-theme .spark-course-btn-trial:hover,
+html.dark-theme .spark-book-info-outline:hover {
+    background: #ff7a00 !important;
+    background-color: #ff7a00 !important;
+    color: #ffffff !important;
+    border-color: #ff7a00 !important;
+    box-shadow: 0 6px 18px rgba(255, 122, 0, 0.4) !important;
+}
+
+/* Book Details Page Specifics */
+html.dark-theme .spark-book-card span[style*="font-size: 36px"],
+html.dark-theme .spark-book-card label {
+    color: #f8fafc !important;
+}
+
+html.dark-theme #books_quantity {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border: 1.5px solid #334155 !important;
+}
+
+html.dark-theme .spark-sample-modal-body {
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark-theme .modal-content {
+    background-color: #131f37 !important;
+    border: 1px solid #243247 !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark-theme .modal-body {
+    background-color: #131f37 !important;
+    color: #cbd5e1 !important;
+}
+
+/* Filter Pills on Catalog */
+html.dark-theme .filter-tab-pill {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark-theme .filter-tab-pill:hover,
+html.dark-theme .filter-tab-pill.active {
+    background-color: #ff7a00 !important;
+    border-color: #ff7a00 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 0, 0.35) !important;
+}
+
+/* Course Details Accordion & Chapters */
+html.dark-theme .spark-course-progress-card {
+    background-color: #131f37 !important;
+    border: 1px solid #243247 !important;
+}
+
+html.dark-theme .spark-course-progress-card .progress {
+    background-color: #0f172a !important;
+}
+
+html.dark-theme .accordion-item {
+    background-color: #131f37 !important;
+    border: 1px solid #243247 !important;
+}
+
+html.dark-theme .accordion-button {
+    background-color: #131f37 !important;
+    color: #f8fafc !important;
+}
+
+html.dark-theme .accordion-button:not(.collapsed) {
+    background-color: #1a2942 !important;
+    color: #f8fafc !important;
+}
+
+html.dark-theme .accordion-body {
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark-theme .accordion-body .d-flex.align-items-center.justify-content-between.mb-3.p-3 {
+    background-color: #131f37 !important;
+    border-color: #243247 !important;
+}
+
+html.dark-theme .accordion-body .d-flex.align-items-center.justify-content-between.mb-3.p-3 h6 {
+    color: #f8fafc !important;
+}
+
+html.dark-theme .accordion-body .p-3.text-center.rounded-3 {
+    background-color: #131f37 !important;
+    border-color: #334155 !important;
+}
+
+/* Offline Banner Contrast Refinement */
+html.dark-theme .spark-address-card {
+    background: linear-gradient(135deg, #09152e 0%, #11254a 100%) !important;
+    border: 1px solid #243247 !important;
+}
+
