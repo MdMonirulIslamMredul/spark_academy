@@ -23,9 +23,14 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>All Preparation Quizzes</h4>
-                        <a href="{{ route('cms.practice_quiz.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Practice Quiz
-                        </a>
+                        <div>
+                            <a href="{{ route('cms.practice_subjects') }}" class="btn btn-outline-primary mr-2">
+                                <i class="fas fa-sitemap"></i> Subjects & Chapters
+                            </a>
+                            <a href="{{ route('cms.practice_quiz.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Practice Quiz
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -53,7 +58,11 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($quiz->category)
+                                            @if($quiz->chapter)
+                                                <span class="badge badge-success mb-1" style="font-size: 11px;">
+                                                    <i class="fas fa-layer-group"></i> {{ optional($quiz->chapter->subject)->title }} &gt; {{ $quiz->chapter->title }} (L{{ $quiz->sort_order }})
+                                                </span>
+                                            @elseif($quiz->category)
                                                 <span class="badge badge-info">{{ $quiz->category->cat_name ?? $quiz->category->name }}</span>
                                             @else
                                                 <span class="badge badge-light text-muted">General</span>

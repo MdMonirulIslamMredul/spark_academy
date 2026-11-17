@@ -93,10 +93,11 @@
                 </ul>
             </li>
 
-            <li class="dropdown">
+            <li class="dropdown {{ request()->routeIs('cms.practice*') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-gamepad"></i><span>Practice Quizzes</span></a>
                 <ul class="dropdown-menu">
-                    <li><a class="nav-link" href="{{route('cms.practice_quiz.create')}}">Add Practice Quiz</a></li>
+                    <li><a class="nav-link" href="{{route('cms.practice_subjects')}}">Subjects & Chapters</a></li>
+                    <li><a class="nav-link" href="{{route('cms.practice_quiz.create')}}">Add Practice Level / Quiz</a></li>
                     <li><a class="nav-link" href="{{route('cms.practice_quizzes')}}">All Practice Quizzes</a></li>
                 </ul>
             </li>

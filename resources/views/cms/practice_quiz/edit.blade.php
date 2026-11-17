@@ -49,16 +49,40 @@
                                 </select>
                             </div>
 
+                            @if(isset($subjects) && $subjects->isNotEmpty())
+                            <div class="row">
+                                <div class="col-md-8 form-group">
+                                    <label for="chapter_id">Assign to Chapter (Optional)</label>
+                                    <select class="form-control select2" id="chapter_id" name="chapter_id">
+                                        <option value="">-- Standalone Practice Quiz (Not in a Chapter) --</option>
+                                        @foreach($subjects as $sub)
+                                            <optgroup label="{{ $sub->title }}">
+                                                @foreach($sub->activeChapters as $chap)
+                                                    <option value="{{ $chap->id }}" {{ old('chapter_id', $quiz->chapter_id) == $chap->id ? 'selected' : '' }}>
+                                                        {{ $sub->title }} &gt; {{ $chap->title }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label for="sort_order">Level Order</label>
+                                    <input type="number" class="form-control" id="sort_order" name="sort_order" min="1" value="{{ old('sort_order', $quiz->sort_order ?: 1) }}">
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="form-group">
-                                <label for="target_repetitions">Target Repetitions Per Question <span class="text-danger">*</span></label>
+                                <label for="target_repetitions">Consecutive Repetitions Per Question <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="target_repetitions" name="target_repetitions" min="1" max="20" value="{{ old('target_repetitions', $quiz->target_repetitions) }}" required>
+                                    <input type="number" class="form-control" id="target_repetitions" name="target_repetitions" min="1" max="20" value="{{ old('target_repetitions', $quiz->target_repetitions ?: 3) }}" required>
                                     <div class="input-group-append">
-                                        <span class="input-group-text">Correct Times</span>
+                                        <span class="input-group-text">Times in a row</span>
                                     </div>
                                 </div>
                                 <small class="form-text text-muted">
-                                    Number of times a student must answer each question correctly before it is considered mastered.
+                                    Number of times a student must answer each question correctly in a row before it is mastered (Default: 3).
                                 </small>
                             </div>
 
